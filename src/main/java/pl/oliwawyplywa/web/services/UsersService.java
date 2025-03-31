@@ -84,7 +84,7 @@ public class UsersService {
 
     @Transactional
     public void logout(String jwtToken) {
-        Session userSession = sessionsRepository.getSessionByToken(jwtToken);
+        Session userSession = sessionsRepository.getSessionByToken(jwtToken).orElseThrow(() -> new HTTPException(HttpStatus.UNAUTHORIZED, "Invalid token"));
         sessionsRepository.delete(userSession);
     }
 }
