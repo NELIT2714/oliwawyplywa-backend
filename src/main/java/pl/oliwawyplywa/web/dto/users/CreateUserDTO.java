@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
-public class CreateUser {
+public class CreateUserDTO {
 
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z0-9._-]{3,30}$")
@@ -24,10 +24,10 @@ public class CreateUser {
     @JsonProperty("password_repeat")
     private String passwordRepeat;
 
-    public CreateUser() {
+    public CreateUserDTO() {
     }
 
-    public CreateUser(String username, String email, String password, String passwordRepeat) {
+    public CreateUserDTO(String username, String email, String password, String passwordRepeat) {
         this.username = username;
         this.email = email;
         this.password = password;

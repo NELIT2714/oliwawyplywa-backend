@@ -1,13 +1,13 @@
 package pl.oliwawyplywa.web.dto.users;
 
-public class Logout {
+public class LogoutDTO {
 
     private String token;
 
-    public Logout() {
+    public LogoutDTO() {
     }
 
-    public Logout(String token) {
+    public LogoutDTO(String token) {
         this.token = token;
     }
 

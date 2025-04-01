@@ -5,8 +5,10 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import pl.oliwawyplywa.web.dto.tokens.TokenResponse;
 
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -19,16 +21,19 @@ public class JwtTokensUtil {
     @Value("${jwt.expiration.time}")
     private long expirationTime;
 
-    public String generateToken(Map<String, Object> claims) {
-        long expirationMillis = new Date().getTime() + expirationTime * 60 * 1000;
-        Date expirationDate = new Date(expirationMillis);
+    public TokenResponse generateToken(Map<String, Object> claims) {
+        long expirationMillis = System.currentTimeMillis() + (expirationTime * 60 * 1000L);
+        Instant expiresAt = Instant.ofEpochMilli(expirationMillis);
+        Date expirationDate = Date.from(expiresAt);
 
-        return Jwts.builder()
+        String jwtToken = Jwts.builder()
             .setClaims(claims)
             .setIssuedAt(new Date())
             .setExpiration(expirationDate)
             .signWith(getSignInKey(), SignatureAlgorithm.HS256)
             .compact();
+
+        return new TokenResponse(jwtToken, expiresAt);
     }
 
     public Claims getTokenData(String token) {

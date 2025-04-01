@@ -2,18 +2,18 @@ package pl.oliwawyplywa.web.dto.users;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Login {
+public class LoginDTO {
 
     @JsonProperty("username_or_email")
     private String usernameOrEmail;
     private String password;
 
-    public Login(String usernameOrEmail, String password) {
+    public LoginDTO(String usernameOrEmail, String password) {
         this.usernameOrEmail = usernameOrEmail;
         this.password = password;
     }
 
-    public Login() {
+    public LoginDTO() {
     }
 
     public String getUsernameOrEmail() {
