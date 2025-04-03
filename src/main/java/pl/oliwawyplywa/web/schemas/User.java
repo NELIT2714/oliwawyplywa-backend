@@ -18,12 +18,17 @@ public class User {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_personal_data", referencedColumnName = "id_personal_data", unique = true, nullable = false)
     private PersonalData personalData;
 
     @OneToMany(mappedBy = "user")
+    @JsonProperty("shipping_addresses")
     private List<ShippingAddress> shippingAddresses;
+
+    @OneToMany(mappedBy = "user")
+    @JsonProperty("sessions")
+    private List<Session> sessions;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
