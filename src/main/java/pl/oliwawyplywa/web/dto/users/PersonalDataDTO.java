@@ -1,9 +1,11 @@
 package pl.oliwawyplywa.web.dto.users;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
 
 public class PersonalDataDTO {
 
+    @Email
     private String email;
 
     @JsonProperty("first_name")

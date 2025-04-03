@@ -4,18 +4,15 @@ import jakarta.transaction.Transactional;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import pl.oliwawyplywa.web.dto.sessions.SessionDTO;
 import pl.oliwawyplywa.web.dto.users.CreateUserDTO;
-import pl.oliwawyplywa.web.dto.users.PersonalDataDTO;
-import pl.oliwawyplywa.web.dto.users.UserResponse;
+import pl.oliwawyplywa.web.dto.users.UpdateUserDTO;
 import pl.oliwawyplywa.web.exceptions.HTTPException;
 import pl.oliwawyplywa.web.repositories.PersonalDataRepository;
 import pl.oliwawyplywa.web.repositories.UsersRepository;
 import pl.oliwawyplywa.web.schemas.PersonalData;
 import pl.oliwawyplywa.web.schemas.Session;
 import pl.oliwawyplywa.web.schemas.User;
-
-import java.util.List;
+import pl.oliwawyplywa.web.utils.mappers.UserMapper;
 
 @Service
 public class UsersService {
@@ -23,35 +20,27 @@ public class UsersService {
     private final UsersRepository usersRepository;
     private final PersonalDataRepository personalDataRepository;
     private final SessionsService sessionsService;
+    private final UserMapper userMapper;
 
-    public UsersService(UsersRepository usersRepository, PersonalDataRepository personalDataRepository, SessionsService sessionsService) {
+    public UsersService(UsersRepository usersRepository, PersonalDataRepository personalDataRepository, SessionsService sessionsService, UserMapper userMapper) {
         this.usersRepository = usersRepository;
         this.personalDataRepository = personalDataRepository;
         this.sessionsService = sessionsService;
+        this.userMapper = userMapper;
     }
 
-    public UserResponse getUserByToken(String jwtToken) {
+    public User getUserById(int userId) {
+        return usersRepository.findById(userId).orElseThrow(() -> new HTTPException(HttpStatus.UNAUTHORIZED, "User not found"));
+    }
+
+    public User getUserByToken(String jwtToken) {
         Session session = sessionsService.getSession(jwtToken);
         User user = session.getUser();
 
         if (user == null) {
             throw new HTTPException(HttpStatus.UNAUTHORIZED, "User not found");
         }
-
-        List<SessionDTO> sessions = sessionsService.getValidSessionsByUser(user)
-            .stream()
-            .map(s -> new SessionDTO(s.getToken(), s.getExpiresAt()))
-            .toList();
-
-        PersonalData userPersonalData = user.getPersonalData();
-        PersonalDataDTO personalDataDTO = new PersonalDataDTO(
-            userPersonalData.getEmail(),
-            userPersonalData.getFirstName(),
-            userPersonalData.getLastName(),
-            userPersonalData.getPhoneNumber()
-        );
-
-        return new UserResponse(user.getUsername(), personalDataDTO, user.getShippingAddresses(), sessions);
+        return user;
     }
 
     @Transactional
@@ -73,6 +62,23 @@ public class UsersService {
         User user = usersRepository.save(new User(username, personalData, BCrypt.hashpw(password, BCrypt.gensalt())));
 
         return sessionsService.createSession(user).getToken();
+    }
+
+    public void update(UpdateUserDTO userDTO, int userId) {
+        User user = getUserById(userId);
+
+        userMapper.updateUserFromDTO(userDTO, user);
+
+        if (userDTO.getPersonalData() != null) {
+            PersonalData userPersonalData = user.getPersonalData();
+            userMapper.updatePersonalDataFromDTO(userDTO.getPersonalData(), userPersonalData);
+        }
+
+        usersRepository.save(user);
+    }
+
+    public void delete(int userId) {
+        usersRepository.delete(getUserById(userId));
     }
 
     public String login(String usernameOrEmail, String password) {

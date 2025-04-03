@@ -1,5 +1,6 @@
 package pl.oliwawyplywa.web.dto.users;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import pl.oliwawyplywa.web.dto.sessions.SessionDTO;
 import pl.oliwawyplywa.web.schemas.ShippingAddress;
 
@@ -7,12 +8,22 @@ import java.util.List;
 
 public class UserResponse {
 
+    @JsonProperty("user_id")
+    private int userId;
+
     private String username;
+
+    @JsonProperty("personal_data")
     private PersonalDataDTO personalData;
+
+    @JsonProperty("shipping_addresses")
     private List<ShippingAddress> shippingAddresses;
+
+    @JsonProperty("sessions")
     private List<SessionDTO> sessions;
 
-    public UserResponse(String username, PersonalDataDTO personalData, List<ShippingAddress> shippingAddresses, List<SessionDTO> sessions) {
+    public UserResponse(int userId, String username, PersonalDataDTO personalData, List<ShippingAddress> shippingAddresses, List<SessionDTO> sessions) {
+        this.userId = userId;
         this.username = username;
         this.personalData = personalData;
         this.shippingAddresses = shippingAddresses;
@@ -49,5 +60,13 @@ public class UserResponse {
 
     public void setPersonalData(PersonalDataDTO personalData) {
         this.personalData = personalData;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }
