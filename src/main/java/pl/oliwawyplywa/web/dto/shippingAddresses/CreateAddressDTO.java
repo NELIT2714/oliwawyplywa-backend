@@ -1,55 +1,26 @@
-package pl.oliwawyplywa.web.schemas;
+package pl.oliwawyplywa.web.dto.shippingAddresses;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
+import pl.oliwawyplywa.web.schemas.User;
 
-@Entity
-@Table(name = "tbl_shipping_addresses")
-public class ShippingAddress {
+public class CreateAddressDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_shipping_address")
-    @JsonProperty("id_shipping_address")
-    private int idShippingAddress;
-
-    @ManyToOne
-    @JoinColumn(name = "id_user", referencedColumnName = "id_user")
     private User user;
-
-    @Column(name = "country", nullable = false)
     private String country;
-
-    @Column(name = "voivodeship", nullable = false)
     private String voivodeship;
-
-    @Column(name = "city", nullable = false)
     private String city;
-
-    @Column(name = "postcode")
     private String postcode;
-
-    @Column(name = "street")
     private String street;
 
-    public ShippingAddress() {
+    public CreateAddressDTO() {
     }
 
-    public ShippingAddress(User user, String country, String voivodeship, String city, String postcode, String street) {
+    public CreateAddressDTO(User user, String country, String voivodeship, String city, String postcode, String street) {
         this.user = user;
         this.country = country;
         this.voivodeship = voivodeship;
         this.city = city;
         this.postcode = postcode;
         this.street = street;
-    }
-
-    public int getIdShippingAddress() {
-        return idShippingAddress;
-    }
-
-    public void setIdShippingAddress(int idShippingAddress) {
-        this.idShippingAddress = idShippingAddress;
     }
 
     public User getUser() {
