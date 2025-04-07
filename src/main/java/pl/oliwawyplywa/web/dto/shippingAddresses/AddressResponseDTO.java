@@ -6,9 +6,9 @@ public class AddressResponseDTO {
 
     @JsonProperty("shipping_address_id")
     private int idShippingAddress;
-
-    @JsonProperty("user_id")
-    private int userId;
+//
+//    @JsonProperty("user_id")
+//    private int userId;
 
     private String country;
     private String voivodeship;
@@ -16,9 +16,9 @@ public class AddressResponseDTO {
     private String postcode;
     private String street;
 
-    public AddressResponseDTO(int idShippingAddress, int userId, String country, String voivodeship, String city, String postcode, String street) {
+    public AddressResponseDTO(int idShippingAddress, String country, String voivodeship, String city, String postcode, String street) {
         this.idShippingAddress = idShippingAddress;
-        this.userId = userId;
+//        this.userId = userId;
         this.country = country;
         this.voivodeship = voivodeship;
         this.city = city;
@@ -33,14 +33,14 @@ public class AddressResponseDTO {
     public void setIdShippingAddress(int idShippingAddress) {
         this.idShippingAddress = idShippingAddress;
     }
+//
+//    public int getUserId() {
+//        return userId;
+//    }
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
+//    public void setUserId(int userId) {
+//        this.userId = userId;
+//    }
 
     public String getCountry() {
         return country;
