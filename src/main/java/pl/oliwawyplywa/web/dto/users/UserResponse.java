@@ -2,6 +2,7 @@ package pl.oliwawyplywa.web.dto.users;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import pl.oliwawyplywa.web.dto.sessions.SessionDTO;
+import pl.oliwawyplywa.web.dto.shippingAddresses.AddressResponseDTO;
 import pl.oliwawyplywa.web.schemas.ShippingAddress;
 
 import java.util.List;
@@ -17,12 +18,12 @@ public class UserResponse {
     private PersonalDataDTO personalData;
 
     @JsonProperty("shipping_addresses")
-    private List<ShippingAddress> shippingAddresses;
+    private List<AddressResponseDTO> shippingAddresses;
 
     @JsonProperty("sessions")
     private List<SessionDTO> sessions;
 
-    public UserResponse(int userId, String username, PersonalDataDTO personalData, List<ShippingAddress> shippingAddresses, List<SessionDTO> sessions) {
+    public UserResponse(int userId, String username, PersonalDataDTO personalData, List<AddressResponseDTO> shippingAddresses, List<SessionDTO> sessions) {
         this.userId = userId;
         this.username = username;
         this.personalData = personalData;
@@ -38,11 +39,11 @@ public class UserResponse {
         this.username = username;
     }
 
-    public List<ShippingAddress> getShippingAddresses() {
+    public List<AddressResponseDTO> getShippingAddresses() {
         return shippingAddresses;
     }
 
-    public void setShippingAddresses(List<ShippingAddress> shippingAddresses) {
+    public void setShippingAddresses(List<AddressResponseDTO> shippingAddresses) {
         this.shippingAddresses = shippingAddresses;
     }
 

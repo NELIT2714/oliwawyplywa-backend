@@ -8,6 +8,8 @@ import pl.oliwawyplywa.web.repositories.ShippingAddressesRepository;
 import pl.oliwawyplywa.web.schemas.ShippingAddress;
 import pl.oliwawyplywa.web.schemas.User;
 
+import java.util.List;
+
 @Service
 public class ShippingAddressesService {
 

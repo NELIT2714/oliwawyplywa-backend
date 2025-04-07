@@ -32,8 +32,8 @@ public class ShippingAddressesController {
 
     private AddressResponseDTO returnShippingAddress(ShippingAddress shippingAddress) {
         return new AddressResponseDTO(
-            shippingAddress.getIdShippingAddress(), shippingAddress.getUser().getIdUser(),
-            shippingAddress.getCountry(), shippingAddress.getVoivodeship(), shippingAddress.getCity(),
+            shippingAddress.getIdShippingAddress(), shippingAddress.getCountry(),
+            shippingAddress.getVoivodeship(), shippingAddress.getCity(),
             shippingAddress.getPostcode(), shippingAddress.getStreet()
         );
     }
