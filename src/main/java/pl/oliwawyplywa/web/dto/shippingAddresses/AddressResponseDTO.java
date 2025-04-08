@@ -15,8 +15,17 @@ public class AddressResponseDTO {
     private String city;
     private String postcode;
     private String street;
+    private String buildingAddress;
 
+<<<<<<< Updated upstream
     public AddressResponseDTO(int idShippingAddress, String country, String voivodeship, String city, String postcode, String street) {
+=======
+<<<<<<< Updated upstream
+    public AddressResponseDTO(int idShippingAddress, int userId, String country, String voivodeship, String city, String postcode, String street) {
+=======
+    public AddressResponseDTO(int idShippingAddress, String country, String voivodeship, String city, String postcode, String street, String buildingAddress) {
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
         this.idShippingAddress = idShippingAddress;
 //        this.userId = userId;
         this.country = country;
@@ -24,6 +33,7 @@ public class AddressResponseDTO {
         this.city = city;
         this.postcode = postcode;
         this.street = street;
+        this.buildingAddress = buildingAddress;
     }
 
     public int getIdShippingAddress() {
@@ -80,5 +90,13 @@ public class AddressResponseDTO {
 
     public void setStreet(String street) {
         this.street = street;
+    }
+
+    public String getBuildingAddress() {
+        return buildingAddress;
+    }
+
+    public void setBuildingAddress(String buildingAddress) {
+        this.buildingAddress = buildingAddress;
     }
 }

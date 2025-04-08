@@ -32,16 +32,20 @@ public class ShippingAddress {
     @Column(name = "street")
     private String street;
 
+    @Column(name = "building_number")
+    private String buildingNumber;
+
     public ShippingAddress() {
     }
 
-    public ShippingAddress(User user, String country, String voivodeship, String city, String postcode, String street) {
+    public ShippingAddress(User user, String country, String voivodeship, String city, String postcode, String street, String buildingNumber) {
         this.user = user;
         this.country = country;
         this.voivodeship = voivodeship;
         this.city = city;
         this.postcode = postcode;
         this.street = street;
+        this.buildingNumber = buildingNumber;
     }
 
     public int getIdShippingAddress() {
@@ -98,5 +102,13 @@ public class ShippingAddress {
 
     public void setStreet(String street) {
         this.street = street;
+    }
+
+    public String getBuildingNumber() {
+        return buildingNumber;
+    }
+
+    public void setBuildingNumber(String buildingNumber) {
+        this.buildingNumber = buildingNumber;
     }
 }
