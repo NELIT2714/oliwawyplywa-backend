@@ -17,15 +17,7 @@ public class AddressResponseDTO {
     private String street;
     private String buildingAddress;
 
-<<<<<<< Updated upstream
-    public AddressResponseDTO(int idShippingAddress, String country, String voivodeship, String city, String postcode, String street) {
-=======
-<<<<<<< Updated upstream
-    public AddressResponseDTO(int idShippingAddress, int userId, String country, String voivodeship, String city, String postcode, String street) {
-=======
     public AddressResponseDTO(int idShippingAddress, String country, String voivodeship, String city, String postcode, String street, String buildingAddress) {
->>>>>>> Stashed changes
->>>>>>> Stashed changes
         this.idShippingAddress = idShippingAddress;
 //        this.userId = userId;
         this.country = country;

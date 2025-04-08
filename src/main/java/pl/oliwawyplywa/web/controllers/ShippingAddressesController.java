@@ -32,20 +32,9 @@ public class ShippingAddressesController {
 
     private AddressResponseDTO returnShippingAddress(ShippingAddress shippingAddress) {
         return new AddressResponseDTO(
-<<<<<<< Updated upstream
-            shippingAddress.getIdShippingAddress(), shippingAddress.getCountry(),
-            shippingAddress.getVoivodeship(), shippingAddress.getCity(),
-=======
-<<<<<<< Updated upstream
-            shippingAddress.getIdShippingAddress(), shippingAddress.getUser().getIdUser(),
-            shippingAddress.getCountry(), shippingAddress.getVoivodeship(), shippingAddress.getCity(),
->>>>>>> Stashed changes
-            shippingAddress.getPostcode(), shippingAddress.getStreet()
-=======
                 shippingAddress.getIdShippingAddress(), shippingAddress.getCountry(),
                 shippingAddress.getVoivodeship(), shippingAddress.getCity(),
                 shippingAddress.getPostcode(), shippingAddress.getStreet(), shippingAddress.getBuildingNumber()
->>>>>>> Stashed changes
         );
     }
 

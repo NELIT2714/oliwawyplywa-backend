@@ -11,7 +11,6 @@ import pl.oliwawyplywa.web.dto.users.*;
 import pl.oliwawyplywa.web.schemas.PersonalData;
 import pl.oliwawyplywa.web.schemas.User;
 import pl.oliwawyplywa.web.services.SessionsService;
-import pl.oliwawyplywa.web.services.ShippingAddressesService;
 import pl.oliwawyplywa.web.services.UsersService;
 
 import java.util.List;
@@ -24,12 +23,10 @@ public class UsersController {
 
     private final UsersService usersService;
     private final SessionsService sessionsService;
-    private final ShippingAddressesService shippingAddressesService;
 
-    public UsersController(UsersService usersService, SessionsService sessionsService, ShippingAddressesService shippingAddressesService) {
+    public UsersController(UsersService usersService, SessionsService sessionsService) {
         this.usersService = usersService;
         this.sessionsService = sessionsService;
-        this.shippingAddressesService = shippingAddressesService;
     }
 
     @GetMapping(path = "/{id}")
@@ -49,31 +46,16 @@ public class UsersController {
                 userPersonalData.getPhoneNumber()
         );
 
-<<<<<<< Updated upstream
-        List<AddressResponseDTO> shippingAddresses = user.getShippingAddresses()
-                .stream()
-                .map(a -> new AddressResponseDTO(
-                                a.getIdShippingAddress(), a.getCountry(),
-                                a.getVoivodeship(), a.getCity(), a.getPostcode(), a.getStreet()
-=======
-<<<<<<< Updated upstream
-        return new UserResponse(user.getIdUser(), user.getUsername(), personalDataDTO, user.getShippingAddresses(), sessions);
-=======
         List<AddressResponseDTO> shippingAddresses = user.getShippingAddresses()
                 .stream()
                 .map(a -> new AddressResponseDTO(
                                 a.getIdShippingAddress(), a.getCountry(), a.getVoivodeship(),
                                 a.getCity(), a.getPostcode(), a.getStreet(), a.getBuildingNumber()
->>>>>>> Stashed changes
                         )
                 )
                 .toList();
 
         return new UserResponse(user.getIdUser(), user.getUsername(), personalDataDTO, shippingAddresses, sessions);
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
->>>>>>> Stashed changes
     }
 
     @PostMapping

@@ -4,8 +4,8 @@ import java.time.Instant;
 
 public class TokenResponse {
 
-    private String token;
-    private Instant expiresAt;
+    private final String token;
+    private final Instant expiresAt;
 
     public TokenResponse(String token, Instant expiresAt) {
         this.token = token;
