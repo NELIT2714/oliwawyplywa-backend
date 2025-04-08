@@ -1,5 +1,6 @@
 package pl.oliwawyplywa.web.dto.shippingAddresses;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import pl.oliwawyplywa.web.schemas.User;
 
 public class CreateAddressDTO {
@@ -11,16 +12,20 @@ public class CreateAddressDTO {
     private String postcode;
     private String street;
 
+    @JsonProperty("building_number")
+    private String buildingAddress;
+
     public CreateAddressDTO() {
     }
 
-    public CreateAddressDTO(User user, String country, String voivodeship, String city, String postcode, String street) {
+    public CreateAddressDTO(User user, String country, String voivodeship, String city, String postcode, String street, String buildingAddress) {
         this.user = user;
         this.country = country;
         this.voivodeship = voivodeship;
         this.city = city;
         this.postcode = postcode;
         this.street = street;
+        this.buildingAddress = buildingAddress;
     }
 
     public User getUser() {
@@ -69,5 +74,13 @@ public class CreateAddressDTO {
 
     public void setStreet(String street) {
         this.street = street;
+    }
+
+    public String getBuildingAddress() {
+        return buildingAddress;
+    }
+
+    public void setBuildingAddress(String buildingAddress) {
+        this.buildingAddress = buildingAddress;
     }
 }

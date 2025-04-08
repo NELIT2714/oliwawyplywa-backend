@@ -49,16 +49,31 @@ public class UsersController {
                 userPersonalData.getPhoneNumber()
         );
 
+<<<<<<< Updated upstream
         List<AddressResponseDTO> shippingAddresses = user.getShippingAddresses()
                 .stream()
                 .map(a -> new AddressResponseDTO(
                                 a.getIdShippingAddress(), a.getCountry(),
                                 a.getVoivodeship(), a.getCity(), a.getPostcode(), a.getStreet()
+=======
+<<<<<<< Updated upstream
+        return new UserResponse(user.getIdUser(), user.getUsername(), personalDataDTO, user.getShippingAddresses(), sessions);
+=======
+        List<AddressResponseDTO> shippingAddresses = user.getShippingAddresses()
+                .stream()
+                .map(a -> new AddressResponseDTO(
+                                a.getIdShippingAddress(), a.getCountry(), a.getVoivodeship(),
+                                a.getCity(), a.getPostcode(), a.getStreet(), a.getBuildingNumber()
+>>>>>>> Stashed changes
                         )
                 )
                 .toList();
 
         return new UserResponse(user.getIdUser(), user.getUsername(), personalDataDTO, shippingAddresses, sessions);
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     }
 
     @PostMapping

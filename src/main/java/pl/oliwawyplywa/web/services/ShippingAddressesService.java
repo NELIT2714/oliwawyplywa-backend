@@ -29,7 +29,7 @@ public class ShippingAddressesService {
         User user = usersService.getUserById(userId);
         return shippingAddressesRepository.save(new ShippingAddress(
             user, addressDTO.getCountry(), addressDTO.getVoivodeship(),
-            addressDTO.getCity(), addressDTO.getPostcode(), addressDTO.getStreet()
+            addressDTO.getCity(), addressDTO.getPostcode(), addressDTO.getStreet(), addressDTO.getBuildingAddress()
         ));
     }
 
