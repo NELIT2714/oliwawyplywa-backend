@@ -18,7 +18,7 @@ public class User {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_personal_data", referencedColumnName = "id_personal_data", unique = true, nullable = false)
     private PersonalData personalData;
 
