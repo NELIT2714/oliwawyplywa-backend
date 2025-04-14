@@ -1,5 +1,6 @@
 package pl.oliwawyplywa.web.schemas;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +14,7 @@ public class ProductOption {
 
     @ManyToOne
     @JoinColumn(name = "id_product", referencedColumnName = "id_product")
+    @JsonIgnore
     private Product product;
 
     @Column(name = "option_label")
@@ -28,6 +30,10 @@ public class ProductOption {
     }
 
     public ProductOption() {
+    }
+
+    public int getIdProductOption() {
+        return idProductOption;
     }
 
     public Product getProduct() {

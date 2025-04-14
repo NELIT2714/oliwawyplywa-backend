@@ -9,13 +9,17 @@ public class ResponseProductDTO extends ProductDTO {
     @JsonProperty("product_id")
     private int productId;
 
+    @JsonProperty("product_options")
+    private List<ResponseProductOptionDTO> productOptions;
+
     public ResponseProductDTO() {
         super();
     }
 
-    public ResponseProductDTO(int categoryId, String productName, String productDescription, List<ProductOptionDTO> productOptions, int productId) {
-        super(categoryId, productName, productDescription, productOptions);
+    public ResponseProductDTO(int productId, int categoryId, String productName, String productDescription, List<ResponseProductOptionDTO> productOptions) {
+        super(categoryId, productName, productDescription);
         this.productId = productId;
+        this.productOptions = productOptions;
     }
 
     public int getProductId() {
@@ -24,5 +28,13 @@ public class ResponseProductDTO extends ProductDTO {
 
     public void setProductId(int productId) {
         this.productId = productId;
+    }
+
+    public List<ResponseProductOptionDTO> getProductOptions() {
+        return productOptions;
+    }
+
+    public void setProductOptions(List<ResponseProductOptionDTO> productOptions) {
+        this.productOptions = productOptions;
     }
 }

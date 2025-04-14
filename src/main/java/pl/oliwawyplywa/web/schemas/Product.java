@@ -32,6 +32,10 @@ public class Product {
     public Product() {
     }
 
+    public int getIdProduct() {
+        return idProduct;
+    }
+
     public Category getCategory() {
         return category;
     }
