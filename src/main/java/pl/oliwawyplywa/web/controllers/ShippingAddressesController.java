@@ -7,7 +7,7 @@ import pl.oliwawyplywa.web.schemas.ShippingAddress;
 import pl.oliwawyplywa.web.services.ShippingAddressesService;
 
 @RestController
-@RequestMapping("/api/shipping-addresses")
+@RequestMapping("/v1/shipping-addresses")
 public class ShippingAddressesController {
 
     private final ShippingAddressesService shippingAddressesService;

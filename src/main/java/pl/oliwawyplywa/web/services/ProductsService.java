@@ -33,7 +33,7 @@ public class ProductsService {
 
     @Transactional
     public Product createProduct(CreateProductDTO productDTO) {
-        Category category = categoriesService.getCategoryById(productDTO.getCategoryId());
+        Category category = categoriesService.getCategory(productDTO.getCategoryId());
         Product product = new Product(category, productDTO.getProductName(), productDTO.getProductDescription());
         productsRepository.save(product);
 

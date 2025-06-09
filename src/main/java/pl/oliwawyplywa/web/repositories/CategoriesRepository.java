@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface CategoriesRepository extends JpaRepository<Category, Integer> {
 
-    @Query(value = "SELECT * FROM tbl_categories WHERE category_name = :category_name", nativeQuery = true)
+    @Query(value = "SELECT c FROM Category c WHERE c.categoryName = :categoryName")
     Optional<Category> getCategoryByName(@Param("category_name") String categoryName);
 
 }

@@ -10,7 +10,7 @@ import pl.oliwawyplywa.web.utils.mappers.ProductMapper;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/v1/products")
 public class ProductsController {
 
     private final ProductsService productsService;
