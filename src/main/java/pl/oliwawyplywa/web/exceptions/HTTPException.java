@@ -1,9 +1,18 @@
 package pl.oliwawyplywa.web.exceptions;
 
+import org.springframework.http.HttpStatus;
+
 public class HTTPException extends RuntimeException {
 
-    public HTTPException(String message) {
+    private final HttpStatus status;
+
+    public HTTPException(HttpStatus status, String message) {
         super(message);
+        this.status = status;
+    }
+
+    public HttpStatus getStatus() {
+        return status;
     }
 
 }

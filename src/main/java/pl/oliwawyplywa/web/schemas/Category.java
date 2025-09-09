@@ -24,17 +24,12 @@ public class Category {
     public Category() {
     }
 
-    public Category(int idCategory, String categoryName) {
-        this.idCategory = idCategory;
+    public Category(String categoryName) {
         this.categoryName = categoryName;
     }
 
     public int getIdCategory() {
         return idCategory;
-    }
-
-    public void setIdCategory(int idCategory) {
-        this.idCategory = idCategory;
     }
 
     public String getCategoryName() {

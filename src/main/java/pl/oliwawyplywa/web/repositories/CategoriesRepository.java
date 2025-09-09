@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface CategoriesRepository extends JpaRepository<Category, Integer> {
 
     @Query(value = "SELECT c FROM Category c WHERE c.categoryName = :categoryName")
-    Optional<Category> getCategoryByName(@Param("category_name") String categoryName);
+    Optional<Category> getCategoryByName(String categoryName);
 
 }

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import pl.oliwawyplywa.web.dto.categories.CreateCategoryDTO;
 import pl.oliwawyplywa.web.schemas.Category;
 import pl.oliwawyplywa.web.services.CategoriesService;
 
@@ -34,7 +35,7 @@ public class CategoriesController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createCategory(@Valid @RequestBody Category categoryDto) {
+    public ResponseEntity<Map<String, Object>> createCategory(@RequestBody Category categoryDto) {
         Category category = categoriesService.createCategory(categoryDto);
         return ResponseEntity.ok().body(Map.of("status", true, "category", category));
     }
