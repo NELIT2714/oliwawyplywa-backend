@@ -16,7 +16,7 @@ import pl.oliwawyplywa.web.services.UsersService;
 import java.util.List;
 import java.util.Map;
 
-@RestController
+//@RestController
 @RequestMapping("/v1/users")
 @Validated
 public class UsersController {

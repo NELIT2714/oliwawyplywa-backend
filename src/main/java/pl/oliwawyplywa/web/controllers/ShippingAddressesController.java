@@ -6,7 +6,7 @@ import pl.oliwawyplywa.web.dto.shippingAddresses.CreateAddressDTO;
 import pl.oliwawyplywa.web.schemas.ShippingAddress;
 import pl.oliwawyplywa.web.services.ShippingAddressesService;
 
-@RestController
+//@RestController
 @RequestMapping("/v1/shipping-addresses")
 public class ShippingAddressesController {
 
