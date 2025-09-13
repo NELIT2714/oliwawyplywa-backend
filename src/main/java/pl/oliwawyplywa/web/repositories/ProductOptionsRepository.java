@@ -1,7 +1,13 @@
 package pl.oliwawyplywa.web.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
 import pl.oliwawyplywa.web.schemas.ProductOption;
+import reactor.core.publisher.Flux;
 
-public interface ProductOptionsRepository extends JpaRepository<ProductOption, Integer> {
+@Repository
+public interface ProductOptionsRepository extends ReactiveCrudRepository<ProductOption, Integer> {
+
+    Flux<ProductOption> findByProductId(Integer productId);
+
 }

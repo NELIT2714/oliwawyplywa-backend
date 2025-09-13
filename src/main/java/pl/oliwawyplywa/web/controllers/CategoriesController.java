@@ -1,19 +1,23 @@
 package pl.oliwawyplywa.web.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import pl.oliwawyplywa.web.dto.categories.CreateCategoryDTO;
 import pl.oliwawyplywa.web.schemas.Category;
 import pl.oliwawyplywa.web.services.CategoriesService;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/categories")
-@Validated
+@Tag(name = "Categories")
 public class CategoriesController {
 
     private final CategoriesService categoriesService;
@@ -22,34 +26,56 @@ public class CategoriesController {
         this.categoriesService = categoriesService;
     }
 
+    @Operation(summary = "Get all categories")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Categories list",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(
+                example =
+                    """
+                        {
+                          "status": true,
+                          "categories": [
+                            {"category_id": 1, "category_name": "Test category 1"},
+                            {"category_id": 2, "category_name": "Test category 2"}
+                          ]
+                        }
+                        """
+            )
+        )
+    )
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getCategories() {
-        List<Category> categories = categoriesService.getCategories();
-        return ResponseEntity.ok().body(Map.of("status", true, "categories", categories));
+    public Mono<ResponseEntity<Map<String, Object>>> getCategories() {
+        return categoriesService.getCategories()
+            .collectList()
+            .map(list -> ResponseEntity.ok(Map.of("status", true, "categories", list)));
     }
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<Map<String, Object>> getCategory(@PathVariable("id") int categoryId) {
-        Category category = categoriesService.getCategory(categoryId);
-        return ResponseEntity.ok().body(Map.of("status", true, "category", category));
+    @GetMapping("/{id}")
+    public Mono<ResponseEntity<Map<String, Object>>> getCategory(@PathVariable("id") int categoryId) {
+        return categoriesService.getCategory(categoryId)
+            .map(category -> ResponseEntity.ok(Map.of("status", true, "category", category)));
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createCategory(@RequestBody Category categoryDto) {
-        Category category = categoriesService.createCategory(categoryDto);
-        return ResponseEntity.ok().body(Map.of("status", true, "category", category));
+    public Mono<ResponseEntity<Map<String, Object>>> createCategory(@Valid @RequestBody Category categoryDto) {
+        return categoriesService.createCategory(categoryDto)
+            .map(category -> ResponseEntity.ok(Map.of("status", true, "category", category)));
     }
 
-    @PatchMapping(path = "/{id}")
-    public ResponseEntity<Map<String, Object>> updateCategory(@PathVariable("id") int categoryId, @RequestBody Category category) {
-        Category updatedCategory = categoriesService.updateCategory(categoryId, category);
-        return ResponseEntity.ok().body(Map.of("status", true, "category", updatedCategory));
+    @PatchMapping("/{id}")
+    public Mono<ResponseEntity<Map<String, Object>>> updateCategory(@PathVariable("id") int categoryId,
+                                                                    @Valid @RequestBody Category category) {
+        return categoriesService.updateCategory(categoryId, category)
+            .map(updatedCategory -> ResponseEntity.ok(Map.of("status", true, "category", updatedCategory)));
     }
 
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Map<String, Object>> deleteCategory(@PathVariable("id") int categoryId) {
-        List<Category> categories = categoriesService.deleteCategoryById(categoryId);
-        return ResponseEntity.ok().body(Map.of("status", true, "categories", categories));
+    @DeleteMapping("/{id}")
+    public Mono<ResponseEntity<Map<String, Object>>> deleteCategory(@PathVariable("id") int categoryId) {
+        return categoriesService.deleteCategoryById(categoryId)
+            .collectList()
+            .map(list -> ResponseEntity.ok(Map.of("status", true, "categories", list)));
     }
-
 }

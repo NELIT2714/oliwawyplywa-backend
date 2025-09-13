@@ -1,14 +1,12 @@
 package pl.oliwawyplywa.web.services;
 
-import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import pl.oliwawyplywa.web.exceptions.HTTPException;
 import pl.oliwawyplywa.web.repositories.CategoriesRepository;
 import pl.oliwawyplywa.web.schemas.Category;
-
-import java.util.List;
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class CategoriesService {
@@ -19,44 +17,45 @@ public class CategoriesService {
         this.categoriesRepository = categoriesRepository;
     }
 
-    public List<Category> getCategories() {
+    public Flux<Category> getCategories() {
         return categoriesRepository.findAll();
     }
 
-    public Category getCategory(int id) {
-        return categoriesRepository.findById(id).orElseThrow(
-            () -> new HTTPException(HttpStatus.NOT_FOUND, "Kategoria o podanej nazwie nie została znaleziona w systemie. Sprawdź poprawność nazwy i spróbuj ponownie")
-        );
+    public Mono<Category> getCategory(int id) {
+        return categoriesRepository.findById(id)
+            .switchIfEmpty(Mono.error(new HTTPException(HttpStatus.NOT_FOUND,
+                "Kategoria nie została znaleziona w systemie. Sprawdź poprawność nazwy i spróbuj ponownie")));
     }
 
-    @Transactional
-    public Category createCategory(Category categoryDto) {
-        Optional<Category> categoryOptional = categoriesRepository.getCategoryByName(categoryDto.getCategoryName());
-        if (categoryOptional.isPresent())
-            throw new HTTPException(HttpStatus.NOT_FOUND, "Kategoria o podanej nazwie już istnieje w systemie. Spróbuj użyć unikalnej nazwy dla kategorii");
-        return categoriesRepository.save(new Category(categoryDto.getCategoryName().trim()));
+    public Mono<Category> createCategory(Category categoryDto) {
+        return categoriesRepository.findByCategoryName(categoryDto.getCategoryName().trim())
+            .flatMap(existing -> Mono.<Category>error(new HTTPException(HttpStatus.NOT_FOUND,
+                "Kategoria o podanej nazwie już istnieje w systemie. Spróbuj użyć unikalnej nazwy dla kategorii")))
+            .switchIfEmpty(
+                categoriesRepository.save(new Category(categoryDto.getCategoryName().trim()))
+            );
     }
 
-    public Category updateCategory(int categoryId, Category categoryDto) {
-        Category category = getCategory(categoryId);
-
-        if (category.getCategoryName().equals(categoryDto.getCategoryName().trim())) {
-            throw new HTTPException(HttpStatus.NOT_FOUND, "Nazwa kategorii nie została zmieniona. Sprawdź poprawność danych i spróbuj ponownie");
-        }
-
-        Optional<Category> optionalCategory = categoriesRepository.getCategoryByName(categoryDto.getCategoryName());
-        if (optionalCategory.isPresent())
-            throw new HTTPException(HttpStatus.NOT_FOUND, "Kategoria o podanej nazwie już istnieje w systemie. Spróbuj użyć unikalnej nazwy dla kategorii");
-
-        category.setCategoryName(categoryDto.getCategoryName().trim());
-        return categoriesRepository.save(category);
+    public Mono<Category> updateCategory(int categoryId, Category categoryDto) {
+        return getCategory(categoryId)
+            .flatMap(category -> {
+                if (category.getCategoryName().equals(categoryDto.getCategoryName().trim())) {
+                    return Mono.error(new HTTPException(HttpStatus.NOT_FOUND,
+                        "Nazwa kategorii nie została zmieniona. Sprawdź poprawność danych i spróbuj ponownie"));
+                }
+                return categoriesRepository.findByCategoryName(categoryDto.getCategoryName().trim())
+                    .flatMap(existing -> Mono.<Category>error(new HTTPException(HttpStatus.NOT_FOUND,
+                        "Kategoria o podanej nazwie już istnieje w systemie. Spróbuj użyć unikalnej nazwy dla kategorii")))
+                    .switchIfEmpty(Mono.defer(() -> {
+                        category.setCategoryName(categoryDto.getCategoryName().trim());
+                        return categoriesRepository.save(category);
+                    }));
+            });
     }
 
-    public List<Category> deleteCategoryById(int categoryId) {
-        Category category = getCategory(categoryId);
-
-        categoriesRepository.delete(category);
-        return categoriesRepository.findAll();
+    public Flux<Category> deleteCategoryById(int categoryId) {
+        return getCategory(categoryId)
+            .flatMapMany(category -> categoriesRepository.delete(category).thenMany(categoriesRepository.findAll()));
     }
 
 }

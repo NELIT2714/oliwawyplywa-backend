@@ -1,55 +1,45 @@
 package pl.oliwawyplywa.web.schemas;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.relational.core.mapping.Column;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-@Entity
-@Table(name = "tbl_products")
+@Table("tbl_products")
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_product")
-    private int idProduct;
+    @Column("id_product")
+    private Integer idProduct;
 
-    @ManyToOne
-    @JoinColumn(name = "id_category", referencedColumnName = "id_category", nullable = false)
-    private Category category;
+    @Column("id_category")
+    private Integer categoryId; // Ссылка на Category через id
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<ProductOption> productOptions;
-
+    @NotBlank
     private String productName;
+
     private String productDescription;
 
-    public Product(Category category, String productName, String productDescription) {
-        this.category = category;
+    public Product() {}
+
+    public Product(Integer categoryId, String productName, String productDescription) {
+        this.categoryId = categoryId;
         this.productName = productName;
         this.productDescription = productDescription;
     }
 
-    public Product() {
-    }
-
-    public int getIdProduct() {
+    public Integer getIdProduct() {
         return idProduct;
     }
 
-    public Category getCategory() {
-        return category;
+    public Integer getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public List<ProductOption> getProductOptions() {
-        return productOptions;
-    }
-
-    public void setProductOptions(List<ProductOption> productOptions) {
-        this.productOptions = productOptions;
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getProductName() {

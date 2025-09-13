@@ -1,47 +1,48 @@
 package pl.oliwawyplywa.web.schemas;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
-@Table(name = "tbl_products_options")
+@Table("tbl_products_options")
 public class ProductOption {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_product_option")
-    private int idProductOption;
+    @Column("id_product_option")
+    private Integer idProductOption;
 
-    @ManyToOne
-    @JoinColumn(name = "id_product", referencedColumnName = "id_product")
+    @Column("id_product")
     @JsonIgnore
-    private Product product;
+    private Integer productId;
 
-    @Column(name = "option_label")
+    @NotBlank
+    @Column("option_label")
     private String optionLabel;
 
-    @Column(name = "option_price")
-    private float optionPrice;
-
-    public ProductOption(Product product, String optionLabel, float optionPrice) {
-        this.product = product;
-        this.optionLabel = optionLabel;
-        this.optionPrice = optionPrice;
-    }
+    @Column("option_price")
+    private Float optionPrice;
 
     public ProductOption() {
     }
 
-    public int getIdProductOption() {
+    public ProductOption(Integer productId, String optionLabel, Float optionPrice) {
+        this.productId = productId;
+        this.optionLabel = optionLabel;
+        this.optionPrice = optionPrice;
+    }
+
+    public Integer getIdProductOption() {
         return idProductOption;
     }
 
-    public Product getProduct() {
-        return product;
+    public Integer getProductId() {
+        return productId;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProductId(Integer productId) {
+        this.productId = productId;
     }
 
     public String getOptionLabel() {
@@ -52,11 +53,11 @@ public class ProductOption {
         this.optionLabel = optionLabel;
     }
 
-    public float getOptionPrice() {
+    public Float getOptionPrice() {
         return optionPrice;
     }
 
-    public void setOptionPrice(float optionPrice) {
+    public void setOptionPrice(Float optionPrice) {
         this.optionPrice = optionPrice;
     }
 }
