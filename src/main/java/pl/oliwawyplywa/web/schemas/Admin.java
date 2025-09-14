@@ -1,5 +1,6 @@
 package pl.oliwawyplywa.web.schemas;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -9,12 +10,14 @@ public class Admin {
 
     @Id
     @Column("id_admin")
+    @JsonProperty("admin_id")
     private Integer adminId;
 
     @Column("username")
     private String username;
 
     @Column("password_hash")
+    @JsonProperty("password_hash")
     private String passwordHash;
 
     public Admin(String username, String passwordHash) {
