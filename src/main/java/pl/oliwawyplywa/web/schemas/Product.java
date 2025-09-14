@@ -15,7 +15,7 @@ public class Product {
     private Integer idProduct;
 
     @Column("id_category")
-    private Integer categoryId; // Ссылка на Category через id
+    private Integer categoryId;
 
     @NotBlank
     private String productName;

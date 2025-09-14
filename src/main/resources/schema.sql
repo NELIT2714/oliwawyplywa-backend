@@ -27,3 +27,10 @@ CREATE TABLE IF NOT EXISTS tbl_products_options (
     REFERENCES tbl_products(id_product)
     ON DELETE CASCADE
 );
+
+-- tbl_admins
+CREATE TABLE IF NOT EXISTS tbl_admins (
+    id_admin INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL
+)

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.oliwawyplywa.web.dto.categories.EditCategoryDTO;
 import pl.oliwawyplywa.web.schemas.Category;
@@ -19,6 +20,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/v1/categories")
 @Tag(name = "Categories")
+@Validated
 public class CategoriesController {
 
     private final CategoriesService categoriesService;
