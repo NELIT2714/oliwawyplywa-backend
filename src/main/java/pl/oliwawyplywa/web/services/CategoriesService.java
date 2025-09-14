@@ -2,6 +2,7 @@ package pl.oliwawyplywa.web.services;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import pl.oliwawyplywa.web.dto.categories.EditCategoryDTO;
 import pl.oliwawyplywa.web.exceptions.HTTPException;
 import pl.oliwawyplywa.web.repositories.CategoriesRepository;
 import pl.oliwawyplywa.web.schemas.Category;
@@ -36,7 +37,7 @@ public class CategoriesService {
             );
     }
 
-    public Mono<Category> updateCategory(int categoryId, Category categoryDto) {
+    public Mono<Category> updateCategory(int categoryId, EditCategoryDTO categoryDto) {
         return getCategory(categoryId)
             .flatMap(category -> {
                 if (category.getCategoryName().equals(categoryDto.getCategoryName().trim())) {
