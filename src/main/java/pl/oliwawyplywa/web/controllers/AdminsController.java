@@ -5,9 +5,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,15 +15,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.oliwawyplywa.web.dto.admins.CreateAdminDTO;
+import pl.oliwawyplywa.web.dto.admins.LoginDTO;
+import pl.oliwawyplywa.web.exceptions.HTTPException;
 import pl.oliwawyplywa.web.schemas.Category;
 import pl.oliwawyplywa.web.services.AdminsService;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/admins")
+@Tag(name = "Admins")
 @Validated
 public class AdminsController {
 
@@ -79,6 +81,49 @@ public class AdminsController {
     public Mono<ResponseEntity<Map<String, Object>>> createAdmin(@Valid @RequestBody CreateAdminDTO createAdminDTO) {
         return adminsService.createAdmin(createAdminDTO)
             .map(admin -> ResponseEntity.status(HttpStatus.OK).body(Map.of("status", true, "admin", admin)));
+    }
+
+    @Operation(
+        summary = "Login to admin account",
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = Category.class),
+                examples = {
+                    @ExampleObject(
+                        name = "Login to admin account",
+                        value =
+                            """
+                            {
+                                "username": "Nelit",
+                                "password": "Qwerty123!"
+                            }
+                            """
+                    )
+                }
+            )
+        )
+    )
+    @ApiResponse(
+        responseCode = "200",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(
+                example =
+                    """
+                    {
+                      "status": true,
+                      "token": "jwt token..."
+                    }
+                    """
+            )
+        )
+    )
+    @PostMapping("/login")
+    public Mono<ResponseEntity<Map<String, Object>>> loginAdmin(@RequestBody LoginDTO loginDTO) {
+        return adminsService.login(loginDTO)
+            .map(token -> ResponseEntity.ok(Map.of("status", true, "token", token.getToken())));
     }
 
 }

@@ -13,8 +13,8 @@ spring:
       platform: mariadb
       schema-locations: classpath:schema.sql
 
-#jwt:
-#  secret:
-#    key: ${JWT_SECRET_KEY}
-#  expiration:
-#    time: ${JWT_EXPIRATION_TIME}
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
+  expiration:
+    time: ${JWT_EXPIRATION_TIME}
