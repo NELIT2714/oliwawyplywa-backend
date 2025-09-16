@@ -12,10 +12,10 @@ public class Product {
 
     @Id
     @Column("id_product")
-    private Integer idProduct;
+    private int idProduct;
 
     @Column("id_category")
-    private Integer categoryId;
+    private int categoryId;
 
     @NotBlank
     private String productName;
@@ -24,21 +24,21 @@ public class Product {
 
     public Product() {}
 
-    public Product(Integer categoryId, String productName, String productDescription) {
+    public Product(int categoryId, String productName, String productDescription) {
         this.categoryId = categoryId;
         this.productName = productName;
         this.productDescription = productDescription;
     }
 
-    public Integer getIdProduct() {
+    public int getIdProduct() {
         return idProduct;
     }
 
-    public Integer getCategoryId() {
+    public int getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Integer categoryId) {
+    public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
     }
 

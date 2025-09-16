@@ -11,7 +11,7 @@ public class Category {
 
     @Id
     @JsonProperty("category_id")
-    private Integer idCategory;
+    private int idCategory;
 
     @NotBlank
     @Pattern(regexp = "^(?=.{3,100}$)[\\p{L}\\p{N}\\p{P}]+(?: [\\p{L}\\p{N}\\p{P}]+)*$")
@@ -25,7 +25,7 @@ public class Category {
         this.categoryName = categoryName;
     }
 
-    public Integer getIdCategory() {
+    public int getIdCategory() {
         return idCategory;
     }
 

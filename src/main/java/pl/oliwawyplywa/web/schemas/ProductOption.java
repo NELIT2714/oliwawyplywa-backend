@@ -6,34 +6,36 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.math.BigDecimal;
+
 @Table("tbl_products_options")
 public class ProductOption {
 
     @Id
     @Column("id_product_option")
-    private Integer idProductOption;
+    private int idProductOption;
 
     @Column("id_product")
     @JsonIgnore
-    private Integer productId;
+    private int productId;
 
     @NotBlank
     @Column("option_label")
     private String optionLabel;
 
     @Column("option_price")
-    private Float optionPrice;
+    private BigDecimal optionPrice;
 
     public ProductOption() {
     }
 
-    public ProductOption(Integer productId, String optionLabel, Float optionPrice) {
+    public ProductOption(int productId, String optionLabel, BigDecimal optionPrice) {
         this.productId = productId;
         this.optionLabel = optionLabel;
         this.optionPrice = optionPrice;
     }
 
-    public Integer getIdProductOption() {
+    public int getIdProductOption() {
         return idProductOption;
     }
 
@@ -53,11 +55,11 @@ public class ProductOption {
         this.optionLabel = optionLabel;
     }
 
-    public Float getOptionPrice() {
+    public BigDecimal getOptionPrice() {
         return optionPrice;
     }
 
-    public void setOptionPrice(Float optionPrice) {
+    public void setOptionPrice(BigDecimal optionPrice) {
         this.optionPrice = optionPrice;
     }
 }

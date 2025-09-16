@@ -11,7 +11,7 @@ public class Admin {
     @Id
     @Column("id_admin")
     @JsonProperty("admin_id")
-    private Integer adminId;
+    private int adminId;
 
     @Column("username")
     private String username;
@@ -25,7 +25,7 @@ public class Admin {
         this.passwordHash = passwordHash;
     }
 
-    public Integer getAdminId() {
+    public int getAdminId() {
         return adminId;
     }
 
