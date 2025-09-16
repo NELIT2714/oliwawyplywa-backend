@@ -114,12 +114,12 @@ public class ProductsController {
                       "product_description": "Test description",
                       "product_options": [
                         {
-                          "option_id": 1
+                          "option_id": 1,
                           "option_label": "Option name 1",
                           "option_price": 10.00
                         },
                         {
-                          "option_id": 2
+                          "option_id": 2,
                           "option_label": "Option name 2",
                           "option_price": 20.00
                         }

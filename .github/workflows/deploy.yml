@@ -23,5 +23,4 @@ jobs:
           script: |
             cd /home/owner/projects/oliwawyplywa/backend
             git pull origin deploy --rebase
-            docker-compose down oliwa-back
             docker-compose up oliwa-back --build -d
