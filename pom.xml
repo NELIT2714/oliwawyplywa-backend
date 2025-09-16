@@ -143,6 +143,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>oliwawyplywa-backend</finalName>
     </build>
 
 </project>
