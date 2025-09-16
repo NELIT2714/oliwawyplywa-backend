@@ -16,6 +16,10 @@ spring:
       platform: mariadb
       schema-locations: classpath:schema.sql
 
+springdoc:
+  swagger-ui:
+    path: /
+
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
