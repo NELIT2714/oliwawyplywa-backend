@@ -38,27 +38,27 @@ public class ProductsController {
             schema = @Schema(
                 example =
                     """
-                        [
-                          {
-                            "category_id": 1,
-                            "product_name": "Products name",
-                            "product_description": "Product description",
-                            "product_id": 1,
-                            "product_options": [
+                            [
                               {
-                                "option_label": "Option name",
-                                "option_price": 100,
-                                "option_id": 1
-                              },
-                              {
-                                "option_label": "Option name",
-                                "option_price": 100,
-                                "option_id": 2
+                                "category_id": 1,
+                                "product_name": "Products name",
+                                "product_description": "Product description",
+                                "product_id": 1,
+                                "product_options": [
+                                  {
+                                    "option_label": "Option name",
+                                    "option_price": 100,
+                                    "option_id": 1
+                                  },
+                                  {
+                                    "option_label": "Option name",
+                                    "option_price": 100,
+                                    "option_id": 2
+                                  }
+                                ]
                               }
                             ]
-                          }
-                        ]
-                    """
+                        """
             )
         )
     )
@@ -79,22 +79,22 @@ public class ProductsController {
                         name = "Create example product",
                         value =
                             """
-                            {
-                              "category_id": 1,
-                              "product_name": "Test product",
-                              "product_description": "Test description",
-                              "product_options": [
                                 {
-                                  "option_label": "Option name 1",
-                                  "option_price": 10.00
-                                },
-                                {
-                                  "option_label": "Option name 2",
-                                  "option_price": 20.00
+                                  "category_id": 1,
+                                  "product_name": "Test product",
+                                  "product_description": "Test description",
+                                  "product_options": [
+                                    {
+                                      "option_label": "Option name 1",
+                                      "option_price": 10.00
+                                    },
+                                    {
+                                      "option_label": "Option name 2",
+                                      "option_price": 20.00
+                                    }
+                                  ]
                                 }
-                              ]
-                            }
-                            """
+                                """
                     )
                 }
             )
@@ -107,25 +107,25 @@ public class ProductsController {
             schema = @Schema(
                 example =
                     """
-                    {
-                      "product_id": 1,
-                      "category_id": 1,
-                      "product_name": "Test product",
-                      "product_description": "Test description",
-                      "product_options": [
                         {
-                          "option_id": 1,
-                          "option_label": "Option name 1",
-                          "option_price": 10.00
-                        },
-                        {
-                          "option_id": 2,
-                          "option_label": "Option name 2",
-                          "option_price": 20.00
+                          "product_id": 1,
+                          "category_id": 1,
+                          "product_name": "Test product",
+                          "product_description": "Test description",
+                          "product_options": [
+                            {
+                              "option_id": 1,
+                              "option_label": "Option name 1",
+                              "option_price": 10.00
+                            },
+                            {
+                              "option_id": 2,
+                              "option_label": "Option name 2",
+                              "option_price": 20.00
+                            }
+                          ]
                         }
-                      ]
-                    }
-                    """
+                        """
             )
         )
     )

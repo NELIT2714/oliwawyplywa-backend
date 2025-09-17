@@ -63,14 +63,14 @@ public class CategoriesController {
             schema = @Schema(
                 example =
                     """
-                    {
-                      "category": {
-                        "category_id": 1,
-                        "category_name": "Category name"
-                      },
-                      "status": true
-                    }
-                    """
+                        {
+                          "category": {
+                            "category_id": 1,
+                            "category_name": "Category name"
+                          },
+                          "status": true
+                        }
+                        """
             )
         )
     )
@@ -92,10 +92,10 @@ public class CategoriesController {
                         name = "Create example category",
                         value =
                             """
-                            {
-                                "category_name": "Category name"
-                            }
-                            """
+                                {
+                                    "category_name": "Category name"
+                                }
+                                """
                     )
                 }
             )
@@ -108,14 +108,14 @@ public class CategoriesController {
             schema = @Schema(
                 example =
                     """
-                    {
-                      "category": {
-                        "category_id": 1,
-                        "category_name": "Category name"
-                      },
-                      "status": true
-                    }
-                    """
+                        {
+                          "category": {
+                            "category_id": 1,
+                            "category_name": "Category name"
+                          },
+                          "status": true
+                        }
+                        """
             )
         )
     )
@@ -137,10 +137,10 @@ public class CategoriesController {
                         name = "Update example category",
                         value =
                             """
-                            {
-                                "category_name": "New category name"
-                            }
-                            """
+                                {
+                                    "category_name": "New category name"
+                                }
+                                """
                     )
                 }
             )
@@ -153,13 +153,13 @@ public class CategoriesController {
             schema = @Schema(
                 example =
                     """
-                    {
-                        "status": true,
-                        "categories": [
-                            {"category_id": 1, "category_name": "New category name"}
-                        ]
-                    }
-                    """
+                        {
+                            "status": true,
+                            "categories": [
+                                {"category_id": 1, "category_name": "New category name"}
+                            ]
+                        }
+                        """
             )
         )
     )
@@ -178,13 +178,13 @@ public class CategoriesController {
             schema = @Schema(
                 example =
                     """
-                    {
-                        "status": true,
-                        "categories": [
-                            {"category_id": 1, "category_name": "Test category 1"}
-                        ]
-                    }
-                    """
+                        {
+                            "status": true,
+                            "categories": [
+                                {"category_id": 1, "category_name": "Test category 1"}
+                            ]
+                        }
+                        """
             )
         )
     )

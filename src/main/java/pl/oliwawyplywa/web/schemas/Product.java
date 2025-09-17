@@ -1,11 +1,9 @@
 package pl.oliwawyplywa.web.schemas;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.data.relational.core.mapping.Column;
 import jakarta.validation.constraints.NotBlank;
-
-import java.util.List;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Table("tbl_products")
 public class Product {
@@ -22,7 +20,8 @@ public class Product {
 
     private String productDescription;
 
-    public Product() {}
+    public Product() {
+    }
 
     public Product(int categoryId, String productName, String productDescription) {
         this.categoryId = categoryId;

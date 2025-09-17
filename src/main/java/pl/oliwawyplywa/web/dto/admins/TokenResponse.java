@@ -1,7 +1,6 @@
 package pl.oliwawyplywa.web.dto.admins;
 
 import java.time.Instant;
-import java.util.Date;
 
 public class TokenResponse {
 

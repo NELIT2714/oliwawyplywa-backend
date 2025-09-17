@@ -1,12 +1,17 @@
 package pl.oliwawyplywa.web.dto.orders;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class CreateOrder {
 
+    @JsonProperty("full_name")
+    private String fullName;
+
     private String email;
     private String address;
-    private List<ProductItem> products;
+    private List<OrderItemDTO> products;
 
     public String getEmail() {
         return email;
@@ -16,7 +21,11 @@ public class CreateOrder {
         return address;
     }
 
-    public List<ProductItem> getProducts() {
+    public List<OrderItemDTO> getProducts() {
         return products;
+    }
+
+    public String getFullName() {
+        return fullName;
     }
 }

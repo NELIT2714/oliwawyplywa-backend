@@ -38,9 +38,11 @@ CREATE TABLE IF NOT EXISTS tbl_admins (
 -- tbl_orders
 CREATE TABLE IF NOT EXISTS tbl_orders (
     id_order INT PRIMARY KEY AUTO_INCREMENT,
+    full_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL,
-    status VARCHAR(20) NOT NULL
+    status VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- tbl_order_items

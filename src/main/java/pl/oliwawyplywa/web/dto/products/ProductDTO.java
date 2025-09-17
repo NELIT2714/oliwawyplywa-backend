@@ -2,8 +2,6 @@ package pl.oliwawyplywa.web.dto.products;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-
 public class ProductDTO {
 
     @JsonProperty("category_id")

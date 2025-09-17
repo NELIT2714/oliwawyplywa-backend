@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.oliwawyplywa.web.dto.admins.CreateAdminDTO;
 import pl.oliwawyplywa.web.dto.admins.LoginDTO;
-import pl.oliwawyplywa.web.exceptions.HTTPException;
 import pl.oliwawyplywa.web.schemas.Category;
 import pl.oliwawyplywa.web.services.AdminsService;
 import reactor.core.publisher.Mono;
