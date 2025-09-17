@@ -72,4 +72,5 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            docker-compose up oliwa-back --build -d
+            docker-compose pull oliwa-back
+            docker-compose up oliwa-back -d

@@ -33,7 +33,7 @@ jwt:
 
 payments:
   tpay:
-    api_url: "https://openapi.sandbox.tpay.com"
-    client_id: "01JH3JEXKK3JYCZ7JHW0KVFF2A-01K5BJ69Z96415V6D8DSA517C5"
-    client_secret: "883b63d1910c7f11c0ef0d320457f64d1271ee507756f1d0f7d8d73f809c4d08"
+    api_url: ${PAYMENTS_TPAY_API_URL}
+    client_id: ${PAYMENTS_TPAY_CLIENT_ID}
+    client_secret: ${PAYMENTS_TPAY_CLIENT_SECRET}
 
