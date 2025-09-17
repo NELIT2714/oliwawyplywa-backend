@@ -2,7 +2,9 @@ package pl.oliwawyplywa.web.services;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import pl.oliwawyplywa.web.dto.categories.CategoryResponse;
 import pl.oliwawyplywa.web.dto.categories.EditCategoryDTO;
+import pl.oliwawyplywa.web.dto.products.ResponseProductDTO;
 import pl.oliwawyplywa.web.exceptions.HTTPException;
 import pl.oliwawyplywa.web.repositories.CategoriesRepository;
 import pl.oliwawyplywa.web.schemas.Category;
@@ -12,14 +14,27 @@ import reactor.core.publisher.Mono;
 @Service
 public class CategoriesService {
 
+    private final ProductsService productsService;
     private final CategoriesRepository categoriesRepository;
 
-    public CategoriesService(CategoriesRepository categoriesRepository) {
+    public CategoriesService(ProductsService productsService, CategoriesRepository categoriesRepository) {
+        this.productsService = productsService;
         this.categoriesRepository = categoriesRepository;
     }
 
-    public Flux<Category> getCategories() {
-        return categoriesRepository.findAll();
+    public Flux<CategoryResponse> getCategories() {
+        Flux<ResponseProductDTO> products = productsService.getProducts();
+        return categoriesRepository.findAll()
+            .flatMap(category ->
+                products
+                    .filter(product -> product.getCategoryId() == category.getIdCategory())
+                    .collectList()
+                    .map(productList -> new CategoryResponse(
+                        category.getIdCategory(),
+                        category.getCategoryName(),
+                        productList
+                    ))
+            );
     }
 
     public Mono<Category> getCategory(int id) {

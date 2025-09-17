@@ -52,7 +52,7 @@ public class CategoriesController {
     public Mono<ResponseEntity<Map<String, Object>>> getCategories() {
         return categoriesService.getCategories()
             .collectList()
-            .map(list -> ResponseEntity.ok(Map.of("status", true, "categories", list)));
+            .map(categories -> ResponseEntity.ok(Map.of("status", true, "categories", categories)));
     }
 
     @Operation(summary = "Get category by ID")

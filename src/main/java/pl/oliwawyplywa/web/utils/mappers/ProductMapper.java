@@ -29,7 +29,7 @@ public class ProductMapper {
                 .collectList()
                 .map(optionsList -> new ResponseProductDTO(
                         product.getIdProduct(),
-                        product.getCategoryId(), // теперь categoryId вместо Category
+                        product.getCategoryId(),
                         product.getProductName(),
                         product.getProductDescription(),
                         optionsList

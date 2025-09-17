@@ -6,14 +6,16 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.oliwawyplywa.web.dto.products.CreateProductDTO;
 import pl.oliwawyplywa.web.dto.products.ResponseProductDTO;
 import pl.oliwawyplywa.web.schemas.Category;
 import pl.oliwawyplywa.web.services.ProductsService;
 import pl.oliwawyplywa.web.utils.mappers.ProductMapper;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/products")
@@ -62,9 +64,13 @@ public class ProductsController {
             )
         )
     )
-    public Flux<ResponseProductDTO> getProducts() {
+    public Mono<ResponseEntity<Map<String, Object>>> getProducts() {
         return productsService.getProducts()
-            .flatMap(productMapper::mapProductToDTO);
+            .collectList()
+            .map(products -> ResponseEntity.ok(Map.of(
+                "status", true,
+                "products", products
+            )));
     }
 
     @Operation(

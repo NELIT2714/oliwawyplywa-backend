@@ -18,6 +18,7 @@ import pl.oliwawyplywa.web.services.tpay.TpayPaymentService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -40,15 +41,25 @@ public class OrdersService {
             .flatMap(order -> {
                 OrderResponse orderResponse = new OrderResponse(order);
 
-                return orderItemsRepository.getOrderItemsByOrderId(orderId)
+                Mono<List<OrderItemDTO>> itemsMono = orderItemsRepository.getOrderItemsByOrderId(orderId)
                     .map(OrderItemDTO::new)
-                    .collectList()
-                    .map(items -> {
+                    .collectList();
+
+                Mono<BigDecimal> totalMono = orderItemsRepository.calculateTotalByOrderId(orderId).defaultIfEmpty(BigDecimal.ZERO);
+
+                return Mono.zip(itemsMono, totalMono)
+                    .map(tuple -> {
+                        List<OrderItemDTO> items = tuple.getT1();
+                        BigDecimal total = tuple.getT2();
+
                         orderResponse.setItems(items);
+                        orderResponse.setPrice(total);
+
                         return orderResponse;
                     });
             });
     }
+
 
     @Transactional
     public Mono<String> createOrder(CreateOrder createOrderDTO) {
@@ -88,8 +99,7 @@ public class OrdersService {
                         product.getQuantity(),
                         option.getOptionPrice()
                     ))
-                    .switchIfEmpty(Mono.error(new HTTPException(HttpStatus.NOT_FOUND,
-                        "Product option " + product.getProductOptionId() + " not found")))
+                    .switchIfEmpty(Mono.error(new HTTPException(HttpStatus.NOT_FOUND, "Product option " + product.getProductOptionId() + " not found")))
             );
     }
 

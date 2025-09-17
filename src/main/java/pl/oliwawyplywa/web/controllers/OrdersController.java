@@ -40,6 +40,7 @@ public class OrdersController {
                           "status": true,
                           "order": {
                             "order_id": 1,
+                            "price": 110.00,
                             "email": "example@email.com",
                             "address": "Warszawa ...",
                             "status": "PAID",

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import pl.oliwawyplywa.web.enums.OrderStatuses;
 import pl.oliwawyplywa.web.schemas.Order;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
@@ -24,6 +25,9 @@ public class OrderResponse {
     @JsonProperty("items")
     private List<OrderItemDTO> items;
 
+    @JsonProperty("price")
+    private BigDecimal price;
+
     @JsonProperty("created_at")
     private Instant createdAt;
 
@@ -32,6 +36,7 @@ public class OrderResponse {
         this.email = order.getEmail();
         this.address = order.getAddress();
         this.status = order.getStatus();
+        this.price = getPrice();
         this.createdAt = order.getCreatedAt();
     }
 
@@ -57,6 +62,14 @@ public class OrderResponse {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public void setItems(List<OrderItemDTO> items) {

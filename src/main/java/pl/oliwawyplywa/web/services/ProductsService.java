@@ -1,11 +1,14 @@
 package pl.oliwawyplywa.web.services;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import pl.oliwawyplywa.web.dto.products.CreateProductDTO;
+import pl.oliwawyplywa.web.dto.products.ResponseProductDTO;
 import pl.oliwawyplywa.web.repositories.ProductOptionsRepository;
 import pl.oliwawyplywa.web.repositories.ProductsRepository;
 import pl.oliwawyplywa.web.schemas.Product;
 import pl.oliwawyplywa.web.schemas.ProductOption;
+import pl.oliwawyplywa.web.utils.mappers.ProductMapper;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -18,16 +21,19 @@ public class ProductsService {
     private final ProductOptionsRepository productOptionsRepository;
     private final CategoriesService categoriesService;
 
+    private final ProductMapper productMapper;
+
     public ProductsService(ProductsRepository productsRepository,
                            ProductOptionsRepository productOptionsRepository,
-                           CategoriesService categoriesService) {
+                           @Lazy CategoriesService categoriesService, ProductMapper productMapper) {
         this.productsRepository = productsRepository;
         this.productOptionsRepository = productOptionsRepository;
         this.categoriesService = categoriesService;
+        this.productMapper = productMapper;
     }
 
-    public Flux<Product> getProducts() {
-        return productsRepository.findAll();
+    public Flux<ResponseProductDTO> getProducts() {
+        return productsRepository.findAll().flatMap(productMapper::mapProductToDTO);
     }
 
     public Mono<Product> createProduct(CreateProductDTO dto) {
