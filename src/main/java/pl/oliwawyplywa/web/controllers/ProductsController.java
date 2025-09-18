@@ -7,10 +7,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import pl.oliwawyplywa.web.dto.products.CreateProductDTO;
 import pl.oliwawyplywa.web.dto.products.ResponseProductDTO;
 import pl.oliwawyplywa.web.schemas.Category;
+import pl.oliwawyplywa.web.schemas.Product;
+import pl.oliwawyplywa.web.services.ImageStorageService;
 import pl.oliwawyplywa.web.services.ProductsService;
 import pl.oliwawyplywa.web.utils.mappers.ProductMapper;
 import reactor.core.publisher.Mono;
@@ -24,10 +27,12 @@ public class ProductsController {
 
     private final ProductsService productsService;
     private final ProductMapper productMapper;
+    private final ImageStorageService imageStorageService;
 
-    public ProductsController(ProductsService productsService, ProductMapper productMapper) {
+    public ProductsController(ProductsService productsService, ProductMapper productMapper, ImageStorageService imageStorageService) {
         this.productsService = productsService;
         this.productMapper = productMapper;
+        this.imageStorageService = imageStorageService;
     }
 
     @GetMapping
@@ -78,8 +83,8 @@ public class ProductsController {
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
             content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = Category.class),
+                mediaType = "multipart/form-data",
+                schema = @Schema(implementation = CreateProductDTO.class),
                 examples = {
                     @ExampleObject(
                         name = "Create example product",
@@ -135,9 +140,13 @@ public class ProductsController {
             )
         )
     )
-    @PostMapping
-    public Mono<ResponseProductDTO> createProduct(@RequestBody CreateProductDTO productDTO) {
-        return productsService.createProduct(productDTO)
-            .flatMap(productMapper::mapProductToDTO);
+    @PostMapping(consumes = "multipart/form-data")
+    public Mono<ResponseEntity<Map<String, Object>>> createProduct(
+        @RequestPart(name = "data") @Schema(implementation = CreateProductDTO.class) CreateProductDTO productDTO,
+        @RequestPart(name = "product_image") @Schema(type = "string", format = "binary") FilePart productImage
+    ) {
+        return imageStorageService.saveImage(productImage)
+            .flatMap(image -> productsService.createProduct(productDTO, image))
+            .map(product -> ResponseEntity.ok(Map.of("status", true, "product", product)));
     }
 }

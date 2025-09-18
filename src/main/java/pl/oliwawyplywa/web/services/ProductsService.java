@@ -1,6 +1,7 @@
 package pl.oliwawyplywa.web.services;
 
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import pl.oliwawyplywa.web.dto.products.CreateProductDTO;
 import pl.oliwawyplywa.web.dto.products.ResponseProductDTO;
@@ -36,21 +37,29 @@ public class ProductsService {
         return productsRepository.findAll().flatMap(productMapper::mapProductToDTO);
     }
 
-    public Mono<Product> createProduct(CreateProductDTO dto) {
-        return categoriesService.getCategory(dto.getCategoryId()).flatMap(category -> {
-            Product product = new Product(category.getIdCategory(),
-                dto.getProductName(),
-                dto.getProductDescription());
+    public Mono<Product> createProduct(CreateProductDTO dto, String productImage) {
+        System.out.println(productImage);
+        System.out.println(productImage);
+        System.out.println(productImage);
+        return categoriesService.getCategory(dto.getCategoryId())
+            .flatMap(category -> {
+                Product product = new Product(category.getIdCategory(),
+                    dto.getProductName(),
+                    dto.getProductDescription()
+                );
 
-            return productsRepository.save(product).flatMap(savedProduct -> {
-                List<ProductOption> options = dto.getProductOptions().stream()
-                    .map(o -> new ProductOption(savedProduct.getIdProduct(), o.getOptionLabel(), o.getOptionPrice()))
-                    .toList();
+                return productsRepository.save(product)
+                    .flatMap(savedProduct -> {
 
-                return Flux.fromIterable(options)
-                    .flatMap(productOptionsRepository::save)
-                    .then(Mono.just(savedProduct));
-            });
+
+                        List<ProductOption> options = dto.getProductOptions().stream()
+                            .map(o -> new ProductOption(savedProduct.getIdProduct(), o.getOptionLabel(), o.getOptionPrice()))
+                            .toList();
+
+                        return Flux.fromIterable(options)
+                            .flatMap(productOptionsRepository::save)
+                            .then(Mono.just(savedProduct));
+                });
         });
     }
 }

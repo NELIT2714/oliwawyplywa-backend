@@ -37,3 +37,6 @@ payments:
     client_id: ${PAYMENTS_TPAY_CLIENT_ID}
     client_secret: ${PAYMENTS_TPAY_CLIENT_SECRET}
 
+cdn:
+  storage:
+    path: "/home/nelit/cdn/product"
