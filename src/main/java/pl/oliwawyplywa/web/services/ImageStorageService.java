@@ -1,53 +1,49 @@
 package pl.oliwawyplywa.web.services;
 
-import com.luciad.imageio.webp.WebPWriteParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.FileImageOutputStream;
-import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ImageStorageService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ImageStorageService.class);
     private final Path storagePath;
 
-    public ImageStorageService(@Value("{cdn.storage.path}") String storagePath) {
+    public ImageStorageService(@Value("${cdn.storage.path}") String storagePath) {
         this.storagePath = Paths.get(storagePath);
     }
 
     public Mono<String> saveImage(FilePart filePart) {
         return generateFilePaths(filePart)
             .flatMap(paths -> saveToTempFile(filePart, (Path) paths[1])
-                .then(convertToWebP((Path) paths[0], (Path) paths[1])))
-            .onErrorResume(e -> Mono.error(new RuntimeException("Ошибка при сохранении файла: " + e.getMessage())));
+                .then(convertToWebP((Path) paths[0], (Path) paths[1]))
+                .map(filename -> ((Path) paths[0]).getFileName().toString())
+            )
+            .onErrorResume(e -> Mono.error(new RuntimeException("Error file saving" + e.getMessage())));
     }
 
     private Mono<Object[]> generateFilePaths(FilePart filePart) {
         return Mono.fromCallable(() -> {
-                // Генерируем имя файла: UUID_timestamp.webp
-                String filename = UUID.randomUUID() + "_" + Instant.now().toEpochMilli() + ".webp";
-                Path filePath = storagePath.resolve(filename);
+            String filename = UUID.randomUUID() + "_" + Instant.now().toEpochMilli() + ".webp";
+            Path filePath = storagePath.resolve(filename);
 
-                // Создаём директорию, если она не существует
-                Files.createDirectories(storagePath);
+            Files.createDirectories(storagePath);
 
-                // Временный файл
-                Path tempFile = storagePath.resolve("temp_" + filePart.filename());
-                return new Object[]{filePath, tempFile};
-            })
-            .subscribeOn(Schedulers.boundedElastic());
+            Path tempFile = storagePath.resolve("temp_" + filePart.filename());
+            return new Object[]{filePath, tempFile};
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 
     private Mono<Void> saveToTempFile(FilePart filePart, Path tempFile) {
@@ -56,28 +52,13 @@ public class ImageStorageService {
 
     private Mono<String> convertToWebP(Path filePath, Path tempFile) {
         return Mono.fromCallable(() -> {
-                // Читаем изображение
-                BufferedImage image = ImageIO.read(tempFile.toFile());
-
-                // Находим WebP ImageWriter
-                ImageWriter writer = ImageIO.getImageWritersByMIMEType("image/webp").next();
-
-                // Настраиваем параметры для lossless сжатия
-                WebPWriteParam writeParam = new WebPWriteParam(writer.getLocale());
-                writeParam.setCompressionMode(WebPWriteParam.MODE_EXPLICIT);
-                writeParam.setCompressionType("LOSSLESS");
-
-                // Сохраняем в WebP
-                try (FileImageOutputStream output = new FileImageOutputStream(filePath.toFile())) {
-                    writer.setOutput(output);
-                    writer.write(null, new IIOImage(image, null, null), writeParam);
-                }
-                writer.dispose();
-
-                Files.deleteIfExists(tempFile); // Удаляем временный файл
-                return filePath.getFileName().toString();
-            })
-            .subscribeOn(Schedulers.boundedElastic());
+            ProcessBuilder pb = new ProcessBuilder("cwebp", "-q", "70", tempFile.toString(), "-o", filePath.toString());
+            Process p = pb.start();
+            p.waitFor(10, TimeUnit.SECONDS);
+            if (p.exitValue() != 0) throw new RuntimeException("cwebp failed");
+            Files.deleteIfExists(tempFile);
+            return filePath.getFileName().toString();
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 
 }

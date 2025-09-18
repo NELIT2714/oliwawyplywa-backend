@@ -142,8 +142,8 @@ public class ProductsController {
     )
     @PostMapping(consumes = "multipart/form-data")
     public Mono<ResponseEntity<Map<String, Object>>> createProduct(
-        @RequestPart(name = "data") @Schema(implementation = CreateProductDTO.class) CreateProductDTO productDTO,
-        @RequestPart(name = "product_image") @Schema(type = "string", format = "binary") FilePart productImage
+        @RequestPart(name = "data") CreateProductDTO productDTO,
+        @RequestPart(name = "product_image") FilePart productImage
     ) {
         return imageStorageService.saveImage(productImage)
             .flatMap(image -> productsService.createProduct(productDTO, image))
