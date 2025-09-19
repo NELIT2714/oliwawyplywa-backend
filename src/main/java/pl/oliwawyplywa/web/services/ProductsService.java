@@ -38,20 +38,17 @@ public class ProductsService {
     }
 
     public Mono<Product> createProduct(CreateProductDTO dto, String productImage) {
-        System.out.println(productImage);
-        System.out.println(productImage);
-        System.out.println(productImage);
         return categoriesService.getCategory(dto.getCategoryId())
             .flatMap(category -> {
-                Product product = new Product(category.getIdCategory(),
+                Product product = new Product(
+                    category.getIdCategory(),
                     dto.getProductName(),
-                    dto.getProductDescription()
+                    dto.getProductDescription(),
+                    productImage
                 );
 
                 return productsRepository.save(product)
                     .flatMap(savedProduct -> {
-
-
                         List<ProductOption> options = dto.getProductOptions().stream()
                             .map(o -> new ProductOption(savedProduct.getIdProduct(), o.getOptionLabel(), o.getOptionPrice()))
                             .toList();

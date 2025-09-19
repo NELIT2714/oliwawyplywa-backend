@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS tbl_products
     id_category         INT UNSIGNED NOT NULL,
     product_name        VARCHAR(200) NOT NULL,
     product_description TEXT,
+    product_image       VARCHAR(60) NOT NULL,
     INDEX idx_products_category (id_category),
     INDEX idx_products_name (product_name),
     CONSTRAINT fk_products_category

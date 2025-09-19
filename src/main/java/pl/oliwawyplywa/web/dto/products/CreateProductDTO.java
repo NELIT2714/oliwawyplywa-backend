@@ -10,7 +10,7 @@ public class CreateProductDTO extends ProductDTO {
     private List<ProductOptionDTO> productOptions;
 
     public CreateProductDTO(int categoryId, String productName, String productDescription, List<ProductOptionDTO> productOptions) {
-        super(categoryId, productName, productDescription);
+        super(categoryId, productName, productDescription, null);
         this.productOptions = productOptions;
     }
 

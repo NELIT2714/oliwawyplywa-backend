@@ -19,20 +19,21 @@ public class ProductMapper {
 
     public Flux<ResponseProductOptionDTO> mapProductOptionsToDTO(Product product) {
         return productOptionsRepository.findByProductId(product.getIdProduct())
-                .map(po -> new ResponseProductOptionDTO(
-                        po.getOptionLabel(), po.getOptionPrice(), po.getIdProductOption()
-                ));
+            .map(po -> new ResponseProductOptionDTO(
+                po.getOptionLabel(), po.getOptionPrice(), po.getIdProductOption()
+            ));
     }
 
     public Mono<ResponseProductDTO> mapProductToDTO(Product product) {
         return mapProductOptionsToDTO(product)
-                .collectList()
-                .map(optionsList -> new ResponseProductDTO(
-                        product.getIdProduct(),
-                        product.getCategoryId(),
-                        product.getProductName(),
-                        product.getProductDescription(),
-                        optionsList
-                ));
+            .collectList()
+            .map(optionsList -> new ResponseProductDTO(
+                product.getIdProduct(),
+                product.getCategoryId(),
+                product.getProductName(),
+                product.getProductDescription(),
+                product.getProductImage(),
+                optionsList
+            ));
     }
 }

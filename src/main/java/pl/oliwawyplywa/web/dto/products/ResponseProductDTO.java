@@ -16,8 +16,8 @@ public class ResponseProductDTO extends ProductDTO {
         super();
     }
 
-    public ResponseProductDTO(int productId, int categoryId, String productName, String productDescription, List<ResponseProductOptionDTO> productOptions) {
-        super(categoryId, productName, productDescription);
+    public ResponseProductDTO(int productId, int categoryId, String productName, String productDescription, String productImage, List<ResponseProductOptionDTO> productOptions) {
+        super(categoryId, productName, productDescription, productImage);
         this.productId = productId;
         this.productOptions = productOptions;
     }

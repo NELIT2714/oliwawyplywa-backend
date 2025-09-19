@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class ImageStorageService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ImageStorageService.class);
     private final Path storagePath;
 
     public ImageStorageService(@Value("${cdn.storage.path}") String storagePath) {
@@ -40,8 +39,8 @@ public class ImageStorageService {
             Path filePath = storagePath.resolve(filename);
 
             Files.createDirectories(storagePath);
-
             Path tempFile = storagePath.resolve("temp_" + filePart.filename());
+
             return new Object[]{filePath, tempFile};
         }).subscribeOn(Schedulers.boundedElastic());
     }
@@ -54,9 +53,12 @@ public class ImageStorageService {
         return Mono.fromCallable(() -> {
             ProcessBuilder pb = new ProcessBuilder("cwebp", "-q", "70", tempFile.toString(), "-o", filePath.toString());
             Process p = pb.start();
-            p.waitFor(10, TimeUnit.SECONDS);
+
+            p.waitFor(5, TimeUnit.SECONDS);
             if (p.exitValue() != 0) throw new RuntimeException("cwebp failed");
+
             Files.deleteIfExists(tempFile);
+
             return filePath.getFileName().toString();
         }).subscribeOn(Schedulers.boundedElastic());
     }

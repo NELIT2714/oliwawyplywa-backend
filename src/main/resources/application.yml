@@ -41,4 +41,4 @@ payments:
 
 cdn:
   storage:
-    path: "/home/nelit/cdn/product"
+    path: "D:/Java Web/oliwawyplywa.pl/backend/cdn/products"
