@@ -11,6 +11,7 @@
 #ENTRYPOINT ["java", "-jar", "oliwawyplywa-backend.jar"]
 
 FROM eclipse-temurin:21-jdk
+RUN apt-get update && apt-get install -y webp && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY oliwawyplywa-backend.jar oliwawyplywa-backend.jar
 EXPOSE 4000

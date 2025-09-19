@@ -1,11 +1,13 @@
 server:
   port: 4000
 
+
 spring:
   main:
     allow-bean-definition-overriding: true
   application:
     name: backend
+
 
   r2dbc:
     url: r2dbc:mariadb://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
@@ -16,15 +18,18 @@ spring:
       initial-size: 10
       max-size: 50
 
+
   sql:
     init:
       mode: always
       platform: mariadb
       schema-locations: classpath:schema.sql
 
+
 springdoc:
   swagger-ui:
     path: /
+
 
 jwt:
   secret:
@@ -39,6 +44,7 @@ payments:
     client_id: ${PAYMENTS_TPAY_CLIENT_ID}
     client_secret: ${PAYMENTS_TPAY_CLIENT_SECRET}
 
+
 cdn:
   storage:
-    path: "D:/Java Web/oliwawyplywa.pl/backend/cdn/products"
+    path: ${CDN_STORAGE_PATH}
