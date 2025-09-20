@@ -5,8 +5,21 @@ server:
 spring:
   main:
     allow-bean-definition-overriding: true
+
   application:
     name: backend
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your-email@gmail.com
+    password: your-app-password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 
   r2dbc:
@@ -43,6 +56,8 @@ payments:
     api_url: ${PAYMENTS_TPAY_API_URL}
     client_id: ${PAYMENTS_TPAY_CLIENT_ID}
     client_secret: ${PAYMENTS_TPAY_CLIENT_SECRET}
+    certs:
+      jws-root:
 
 
 cdn:

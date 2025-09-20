@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Potwierdzenie zamówienia</title>
+  <style type="text/css">
+      body {
+          margin: 0;
+          padding: 0;
+          font-family: Arial, sans-serif;
+      }
+
+      table {
+          border-collapse: collapse;
+      }
+
+      td {
+          padding: 10px;
+      }
+
+      .header {
+          background-color: #4CAF50;
+          color: white;
+          text-align: center;
+      }
+
+      .footer {
+          background-color: #f1f1f1;
+          text-align: center;
+          font-size: 12px;
+      }
+  </style>
+</head>
+<body>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="center">
+      <table width="600" border="0" cellspacing="0" cellpadding="0">
+        <!-- Header -->
+        <tr>
+          <td class="header" style="padding: 20px;">
+            <h1>Potwierdzenie zamówienia</h1>
+            <p>Sklep z Oliwą z Oliwek</p>
+          </td>
+        </tr>
+        <!-- Greeting -->
+        <tr>
+          <td style="padding: 20px;">
+            <p>Szanowny Kliencie,</p>
+            <p>Dziękujemy za Twój zakup w naszym sklepie!</p>
+          </td>
+        </tr>
+        <!-- User Details -->
+        <tr>
+          <td style="padding: 20px;">
+            <h2>Szczegóły Twojego zamówienia</h2>
+            <table width="100%" border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <td>Imię:</td>
+                <td th:text="${userFirstName}">Jan</td>
+              </tr>
+              <tr>
+                <td>Nazwisko:</td>
+                <td th:text="${userLastName}">Kowalski</td>
+              </tr>
+              <tr>
+                <td>Adres:</td>
+                <td th:text="${userAddress}">ul. Przykładowa 1, Warszawa</td>
+              </tr>
+              <tr>
+                <td>E-mail:</td>
+                <td th:text="${userEmail}">jan.kowalski@example.com</td>
+              </tr>
+              <tr>
+                <td>Telefon:</td>
+                <td th:text="${userPhone}">+48 123 456 789</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- Products Section -->
+        <tr>
+          <td style="padding: 20px;">
+            <h2>Wybrane produkty</h2>
+            <table width="100%" border="1" cellspacing="0" cellpadding="5">
+              <thead>
+              <tr>
+                <th>Nazwa produktu</th>
+                <th>Ilość</th>
+                <th>Cena</th>
+                <th>Suma częściowa</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="product : ${products}">
+                <td th:text="${product.productName}">Oliwa Extra Virgin</td>
+                <td th:text="${product.quantity}">1</td>
+                <td th:text="${product.price} + ' PLN'">0.00 PLN</td>
+                <td th:text="${product.subtotal} + ' PLN'">0.00 PLN</td>
+              </tr>
+              </tbody>
+              <tfoot>
+              <tr>
+                <td colspan="3" align="right"><strong>Razem:</strong></td>
+                <td th:text="${total} + ' PLN'">0.00 PLN</td>
+              </tr>
+              </tfoot>
+            </table>
+          </td>
+        </tr>
+        <!-- Closing -->
+        <tr>
+          <td style="padding: 20px;">
+            <p>Dziękujemy za zakup!</p>
+            <p>Z poważaniem,</p>
+            <p>Sklep z Oliwą z Oliwek</p>
+          </td>
+        </tr>
+        <!-- Footer -->
+        <tr>
+          <td class="footer" style="padding: 10px;">
+            <p>Skontaktuj się z nami pod adresem: <a th:href="'mailto:kontakt@oliwa-sklep.pl'"
+                                                     href="mailto:kontakt@oliwa-sklep.pl">kontakt@oliwa-sklep.pl</a></p>
+            <p>&copy; 2025 Sklep z Oliwą z Oliwek. Wszystkie prawa zastrzeżone.</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

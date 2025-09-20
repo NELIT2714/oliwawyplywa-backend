@@ -1,4 +1,4 @@
-package pl.oliwawyplywa.web.services.tpay;
+package pl.oliwawyplywa.web.config;
 
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
