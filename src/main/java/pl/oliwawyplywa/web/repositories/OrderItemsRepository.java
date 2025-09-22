@@ -19,9 +19,9 @@ public interface OrderItemsRepository extends ReactiveCrudRepository<OrderItem, 
 
     @Query("""
         SELECT oi.id_item, oi.id_order, oi.id_product_option, oi.quantity, oi.price,
-               p.product_name, po.option_name
+               p.product_name, po.option_label
         FROM tbl_order_items oi
-        JOIN tbl_product_options po ON oi.id_product_option = po.id_product_option
+        JOIN tbl_products_options po ON oi.id_product_option = po.id_product_option
         JOIN tbl_products p ON po.id_product = p.id_product
         WHERE oi.id_order = :orderId
     """)
