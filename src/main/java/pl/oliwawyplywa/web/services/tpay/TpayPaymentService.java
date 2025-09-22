@@ -61,7 +61,7 @@ public class TpayPaymentService {
                             "success", "https://oliwawyplywa.pl/",
                             "error", "https://oliwawyplywa.pl/"
                         ),
-                        "notificationUrls", Map.of(
+                        "notification", Map.of(
                             "url", "https://api.dba-agency.com/v1/tpay/callback",
                             "email", order.getEmail()
                         )
