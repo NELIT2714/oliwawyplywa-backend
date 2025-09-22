@@ -29,11 +29,17 @@ public class TpayCertService {
     }
 
     public void verifyCertificateChain(X509Certificate signingCert) throws Exception {
-        if (rootCert == null) {
-            System.out.println("[TPAY] Root certificate not configured, skipping chain validation.");
-            return;
+        try {
+            if (rootCert == null) {
+                System.out.println("[TPAY] Root certificate not configured, skipping chain validation.");
+                return;
+            }
+            PublicKey rootKey = rootCert.getPublicKey();
+            signingCert.verify(rootKey);
+        } catch (Exception e) {
+            System.out.println("[TPAY] Certificate chain validation failed: " + e.getMessage());
+            throw new Exception("Certificate chain validation failed", e);
         }
-        PublicKey rootKey = rootCert.getPublicKey();
-        signingCert.verify(rootKey);
+
     }
 }
