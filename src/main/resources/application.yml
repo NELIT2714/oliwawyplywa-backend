@@ -57,7 +57,7 @@ payments:
     client_id: ${PAYMENTS_TPAY_CLIENT_ID}
     client_secret: ${PAYMENTS_TPAY_CLIENT_SECRET}
     certs:
-      jws-root:
+      jws-root: ${PAYMENTS_TPAY_CERTS_JWS_ROOT}
 
 
 cdn:

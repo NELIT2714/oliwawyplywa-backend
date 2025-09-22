@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.cert.*;
-import java.util.List;
-import java.util.Set;
+import java.security.PublicKey;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 
 @Service
 public class TpayCertService {
@@ -26,12 +26,14 @@ public class TpayCertService {
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
         this.rootCert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(rootBytes));
-        System.out.println("Tpay root certificate loaded: " + rootCert.getSubjectDN());
     }
 
     public void verifyCertificateChain(X509Certificate signingCert) throws Exception {
-        // просто проверяем подпись signingCert через rootCert
-        signingCert.verify(rootCert.getPublicKey());
-        System.out.println("Signing certificate verified against root");
+        if (rootCert == null) {
+            System.out.println("[TPAY] Root certificate not configured, skipping chain validation.");
+            return;
+        }
+        PublicKey rootKey = rootCert.getPublicKey();
+        signingCert.verify(rootKey);
     }
 }
