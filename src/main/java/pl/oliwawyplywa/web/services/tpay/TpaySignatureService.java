@@ -41,21 +41,21 @@ public class TpaySignatureService {
         String headerJson = new String(headerBytes, StandardCharsets.UTF_8);
 
         // Extract x5u using regex
-        Matcher matcher = X5U_PATTERN.matcher(headerJson);
-        String x5u = null;
-        if (matcher.find()) {
-            x5u = matcher.group(1);
-        }
+//        Matcher matcher = X5U_PATTERN.matcher(headerJson);
+//        String x5u = null;
+//        if (matcher.find()) {
+//            x5u = matcher.group(1);
+//        }
 
-        if (x5u == null) {
-            logger.warn("Missing x5u in JWS header");
-            return Mono.just(false);
-        }
+//        if (x5u == null) {
+//            logger.warn("Missing x5u in JWS header");
+//            return Mono.just(false);
+//        }
 
-        if (!EXPECTED_X5U.equals(x5u)) {
-            logger.warn("Invalid x5u URL: expected={}, received={}", EXPECTED_X5U, x5u);
-            return Mono.just(false);
-        }
+//        if (!EXPECTED_X5U.equals(x5u)) {
+//            logger.warn("Invalid x5u URL: expected={}, received={}", EXPECTED_X5U, x5u);
+//            return Mono.just(false);
+//        }
 
         // Encode payload (raw body) to base64url without padding
         byte[] bodyBytes = body.getBytes(StandardCharsets.UTF_8);
