@@ -2,9 +2,11 @@ package pl.oliwawyplywa.web.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Mono;
 
+@Service
 public class TransactionService {
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);

@@ -1,29 +1,16 @@
 package pl.oliwawyplywa.web.services.tpay;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jose.Payload;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jose.util.Base64URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.io.ByteArrayInputStream;
-import java.net.URI;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Signature;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 public class TpaySignatureService {

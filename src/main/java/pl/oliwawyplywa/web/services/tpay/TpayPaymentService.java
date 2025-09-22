@@ -1,5 +1,6 @@
 package pl.oliwawyplywa.web.services.tpay;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatusCode;
@@ -107,7 +108,7 @@ public class TpayPaymentService {
                             return Mono.just("FALSE - Missing parameters");
                         }
 
-                        String computedMd5 = DigestUtils.md5Hex(id + trId + trAmount + trCrc + securityCode);
+                        String computedMd5 = DigestUtils.md5Hex(id + trId + trAmount + trCrc + "TH(8I)3zRJ$|b3*H+");
                         if (!computedMd5.equals(md5sumReceived)) {
                             logger.warn("md5sum verification failed: computed={}, received={}", computedMd5, md5sumReceived);
                             return Mono.just("FALSE - Invalid md5sum");
