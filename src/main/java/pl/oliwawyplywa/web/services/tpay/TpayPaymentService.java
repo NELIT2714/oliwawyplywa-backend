@@ -141,7 +141,7 @@ public class TpayPaymentService {
             .defaultIfEmpty("FALSE - Empty body");
     }
 
-    private Mono<Order> updateOrderStatus(int orderId) {
+    private Mono<Void> updateOrderStatus(int orderId) {
         return ordersService.getOrder(orderId)
             .switchIfEmpty(Mono.error(new IllegalArgumentException("Order not found for ID: " + orderId)))
             .flatMap(order -> {
@@ -151,7 +151,7 @@ public class TpayPaymentService {
                 }
                 logger.info("Updating order {} status to {}", orderId, OrderStatuses.PAID);
                 order.setStatus(OrderStatuses.PAID);
-                return ordersRepository.save(order);
+                return ordersRepository.save(order).then();
             });
     }
 
