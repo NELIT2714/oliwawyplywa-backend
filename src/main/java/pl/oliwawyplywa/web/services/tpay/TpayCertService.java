@@ -24,7 +24,6 @@ public class TpayCertService {
 
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
-        // Загружаем корневой сертификат
         X509Certificate rootTemp;
         try (InputStream rootIs = new FileInputStream(rootPath)) {
             rootTemp = (X509Certificate) cf.generateCertificate(rootIs);
@@ -35,7 +34,6 @@ public class TpayCertService {
         }
         this.rootCert = rootTemp;
 
-        // Загружаем сертификат подписи
         X509Certificate signingTemp;
         try (InputStream signIs = new FileInputStream(signingPath)) {
             signingTemp = (X509Certificate) cf.generateCertificate(signIs);
@@ -46,7 +44,6 @@ public class TpayCertService {
         }
         this.signingCert = signingTemp;
 
-        // Проверяем цепочку сразу при старте
         try {
             signingCert.verify(rootCert.getPublicKey());
             logger.info("Certificate chain verification succeeded");
