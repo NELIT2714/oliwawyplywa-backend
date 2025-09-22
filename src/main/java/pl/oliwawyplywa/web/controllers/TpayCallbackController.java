@@ -23,17 +23,23 @@ public class TpayCallbackController {
     public Mono<String> handleCallback(@RequestHeader("X-JWS-Signature") String jws,
                                        ServerHttpRequest request) {
 
+        System.out.println("[CALLBACK] X-JWS-Signature: " + (jws == null ? "null" : jws));
+
         return DataBufferUtils.join(request.getBody())
             .flatMap(dataBuffer -> {
                 byte[] bodyBytes = new byte[dataBuffer.readableByteCount()];
                 dataBuffer.read(bodyBytes);
                 DataBufferUtils.release(dataBuffer);
 
-                System.out.println("[CALLBACK BODY (raw)] " + new String(bodyBytes, StandardCharsets.ISO_8859_1));
+                System.out.println("[CALLBACK BODY (raw ISO-8859-1)] " + new String(bodyBytes, StandardCharsets.ISO_8859_1));
+                System.out.println("[CALLBACK BODY (raw UTF-8 preview)] " + new String(bodyBytes, StandardCharsets.UTF_8).replaceAll("\\s+", " ").substring(0, Math.min(200, new String(bodyBytes, StandardCharsets.UTF_8).length())));
 
                 return Mono.fromCallable(() -> signatureService.verify(jws, bodyBytes))
                     .map(ok -> ok ? "TRUE" : "FALSE - invalid signature")
-                    .doOnError(e -> System.out.println("[CALLBACK ERROR] " + e.getClass().getSimpleName() + ": " + e.getMessage()))
+                    .doOnError(e -> {
+                        System.out.println("[CALLBACK ERROR] " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                        e.printStackTrace();
+                    })
                     .onErrorReturn("FALSE - exception during verification");
             });
     }
