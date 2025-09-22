@@ -31,15 +31,17 @@ public class TpaySignatureService {
         String headerB64 = parts[0];
         String signatureB64 = parts[2];
 
+        // Декодируем header
         String headerJson = new String(Base64.getUrlDecoder().decode(headerB64), StandardCharsets.UTF_8);
         Map<String, Object> header = new ObjectMapper().readValue(headerJson, Map.class);
 
         if (!header.containsKey("x5u")) return false;
 
+        // Берем локальный сертификат подписи
         X509Certificate signingCert = certService.getSigningCert();
 
-        String payloadB64 = Base64.getUrlEncoder().withoutPadding()
-            .encodeToString(new String(rawBodyBytes, StandardCharsets.UTF_8).getBytes(StandardCharsets.UTF_8));
+        // --- Важно: payload кодируем строго как Base64url из исходного тела ---
+        String payloadB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(rawBodyBytes);
 
         byte[] sig = Base64.getUrlDecoder().decode(signatureB64);
 
@@ -48,9 +50,11 @@ public class TpaySignatureService {
         verifier.update((headerB64 + "." + payloadB64).getBytes(StandardCharsets.US_ASCII));
 
         boolean valid = verifier.verify(sig);
+
         if (!valid) {
-            System.out.println("[TPAY ERROR] Invalid JWS signature");
+            System.out.println("[TPAY ERROR] Invalid JWS signature for payload: " + new String(rawBodyBytes, StandardCharsets.UTF_8));
         }
+
         return valid;
     }
 }
