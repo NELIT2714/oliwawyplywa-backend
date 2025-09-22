@@ -5,7 +5,7 @@ import pl.oliwawyplywa.web.enums.OrderStatuses;
 import pl.oliwawyplywa.web.schemas.Order;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderResponse {
@@ -29,7 +29,7 @@ public class OrderResponse {
     private BigDecimal price;
 
     @JsonProperty("created_at")
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     public OrderResponse(Order order) {
         this.orderId = order.getOrderId();
@@ -60,7 +60,7 @@ public class OrderResponse {
         return items;
     }
 
-    public Instant getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 

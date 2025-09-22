@@ -6,7 +6,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import pl.oliwawyplywa.web.enums.OrderStatuses;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Table("tbl_orders")
@@ -80,11 +79,11 @@ public class Order {
         this.status = status;
     }
 
-    public Instant getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }
