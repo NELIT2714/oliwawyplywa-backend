@@ -29,10 +29,13 @@ public class TpayCertService {
     }
 
     public void verifyCertificateChain(X509Certificate signingCert) throws Exception {
+        // Загружаем root как trust anchor
+        TrustAnchor anchor = new TrustAnchor(rootCert, null);
+
+        // Строим цепочку: leaf → root
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         CertPath certPath = cf.generateCertPath(List.of(signingCert));
 
-        TrustAnchor anchor = new TrustAnchor(rootCert, null);
         PKIXParameters params = new PKIXParameters(Set.of(anchor));
         params.setRevocationEnabled(false);
 
