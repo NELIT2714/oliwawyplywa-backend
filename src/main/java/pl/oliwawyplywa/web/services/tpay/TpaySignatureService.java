@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
@@ -12,6 +13,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TpaySignatureService {
@@ -40,8 +42,24 @@ public class TpaySignatureService {
         // Берем локальный сертификат подписи
         X509Certificate signingCert = certService.getSigningCert();
 
-        // --- Важно: payload кодируем строго как Base64url из исходного тела ---
-        String payloadB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(rawBodyBytes);
+        // --- Canonical form payload ---
+        String bodyStr = new String(rawBodyBytes, StandardCharsets.ISO_8859_1); // Tpay присылает в ISO-8859-1
+        Map<String, String> params = Arrays.stream(bodyStr.split("&"))
+            .map(s -> s.split("=", 2))
+            .collect(Collectors.toMap(
+                a -> a[0],
+                a -> a.length > 1 ? URLDecoder.decode(a[1], StandardCharsets.UTF_8) : ""
+            ));
+
+        // Сортируем параметры по ключам (строго)
+        String canonicalPayload = params.entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
+            .map(e -> e.getKey() + "=" + e.getValue())
+            .collect(Collectors.joining("&"));
+
+        // Base64url
+        String payloadB64 = Base64.getUrlEncoder().withoutPadding()
+            .encodeToString(canonicalPayload.getBytes(StandardCharsets.UTF_8));
 
         byte[] sig = Base64.getUrlDecoder().decode(signatureB64);
 
@@ -52,7 +70,7 @@ public class TpaySignatureService {
         boolean valid = verifier.verify(sig);
 
         if (!valid) {
-            System.out.println("[TPAY ERROR] Invalid JWS signature for payload: " + new String(rawBodyBytes, StandardCharsets.UTF_8));
+            System.out.println("[TPAY ERROR] Invalid JWS signature for payload: " + canonicalPayload);
         }
 
         return valid;
