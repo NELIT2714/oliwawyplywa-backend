@@ -3,6 +3,7 @@ package pl.oliwawyplywa.web.services.tpay;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -23,6 +24,9 @@ import java.util.Map;
 
 @Service
 public class TpayPaymentService {
+
+    @Value("${payments.tpay.secret_sum_code}")
+    private String secretSumCode;
 
     private static final Logger logger = LoggerFactory.getLogger(TpayPaymentService.class);
 
@@ -74,7 +78,6 @@ public class TpayPaymentService {
     }
 
     public Mono<String> handleCallback(String jws, ServerHttpRequest request) {
-        // Read raw body asynchronously for JWS verification
         return request.getBody()
             .reduce("", (accumulated, dataBuffer) -> {
                 byte[] bytes = new byte[dataBuffer.readableByteCount()];
@@ -90,39 +93,48 @@ public class TpayPaymentService {
                             return Mono.just("FALSE - Invalid JWS signature");
                         }
 
-                        // Parse the form-urlencoded body into params
                         MultiValueMap<String, String> params = UriComponentsBuilder.newInstance()
                             .query(body)
                             .build()
                             .getQueryParams();
 
-                        // Verify md5sum
-                        String id = params.getFirst("id");
-                        String trId = params.getFirst("tr_id");
-                        String trAmount = params.getFirst("tr_amount");
-                        String trCrc = params.getFirst("tr_crc");
-                        String md5sumReceived = params.getFirst("md5sum");
+                        return verifyMd5sum(params)
+                            .flatMap(isValidMd5 -> {
+                                if (!isValidMd5) {
+                                    return Mono.just("FALSE - Invalid md5sum");
+                                }
 
-                        if (id == null || trId == null || trAmount == null || trCrc == null || md5sumReceived == null) {
-                            logger.warn("Missing required parameters for md5sum verification");
-                            return Mono.just("FALSE - Missing parameters");
-                        }
-
-                        String computedMd5 = DigestUtils.md5Hex(id + trId + trAmount + trCrc + "TH(8I)3zRJ$|b3*H+");
-                        if (!computedMd5.equals(md5sumReceived)) {
-                            logger.warn("md5sum verification failed: computed={}, received={}", computedMd5, md5sumReceived);
-                            return Mono.just("FALSE - Invalid md5sum");
-                        }
-
-                        // Process the transaction idempotently
-                        return transactionService.processTransaction(params)
-                            .thenReturn("TRUE")
-                            .onErrorResume(e -> {
-                                logger.error("Error processing transaction", e);
-                                return Mono.just("FALSE - Processing error");
+                                return transactionService.processTransaction(params)
+                                    .thenReturn("TRUE")
+                                    .onErrorResume(e -> {
+                                        logger.error("Error processing transaction", e);
+                                        return Mono.just("FALSE - Processing error");
+                                    });
                             });
                     });
             })
             .defaultIfEmpty("FALSE - Empty body");
+    }
+
+    private Mono<Boolean> verifyMd5sum(MultiValueMap<String, String> params) {
+        String id = params.getFirst("id");
+        String trId = params.getFirst("tr_id");
+        String trAmount = params.getFirst("tr_amount");
+        String trCrc = params.getFirst("tr_crc");
+        String md5sumReceived = params.getFirst("md5sum");
+
+        if (id == null || trId == null || trAmount == null || trCrc == null || md5sumReceived == null) {
+            logger.warn("Missing required parameters for md5sum verification");
+            return Mono.just(false);
+        }
+
+        String computedMd5 = DigestUtils.md5Hex(id + trId + trAmount + trCrc + secretSumCode);
+        if (!computedMd5.equals(md5sumReceived)) {
+            logger.warn("md5sum verification failed: computed={}, received={}", computedMd5, md5sumReceived);
+            return Mono.just(false);
+        }
+
+        logger.debug("md5sum verification succeeded");
+        return Mono.just(true);
     }
 }

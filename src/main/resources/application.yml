@@ -56,9 +56,10 @@ payments:
     api_url: ${PAYMENTS_TPAY_API_URL}
     client_id: ${PAYMENTS_TPAY_CLIENT_ID}
     client_secret: ${PAYMENTS_TPAY_CLIENT_SECRET}
+    secret_sum_code: ${PAYMENTS_TPAY_SECRET_SUM_CODE}
     certs:
-      jws-root: ${PAYMENTS_TPAY_CERTS_JWS_ROOT}
-      jws-notifications: ${PAYMENTS_TPAY_CERTS_JWS_NOTIFICATIONS}
+      jws_root: ${PAYMENTS_TPAY_CERTS_JWS_ROOT}
+      jws_notifications: ${PAYMENTS_TPAY_CERTS_JWS_NOTIFICATIONS}
 
 
 cdn:

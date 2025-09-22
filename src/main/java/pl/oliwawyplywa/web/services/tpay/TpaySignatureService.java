@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
+import java.security.PublicKey;
 import java.security.Signature;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
@@ -18,9 +18,6 @@ public class TpaySignatureService {
     private static final Logger logger = LoggerFactory.getLogger(TpaySignatureService.class);
 
     private final TpayCertService certService;
-
-    private static final String EXPECTED_X5U = "https://secure.tpay.com/x509/notifications-jws.pem";
-    private static final Pattern X5U_PATTERN = Pattern.compile("\"x5u\":\"([^\"]+)\"");
 
     public TpaySignatureService(TpayCertService certService) {
         this.certService = certService;
@@ -36,40 +33,15 @@ public class TpaySignatureService {
         String headerB64 = parts[0];
         String sigB64 = parts[2];
 
-        // Decode header
-        byte[] headerBytes = Base64.getUrlDecoder().decode(headerB64);
-        String headerJson = new String(headerBytes, StandardCharsets.UTF_8);
-
-        // Extract x5u using regex
-//        Matcher matcher = X5U_PATTERN.matcher(headerJson);
-//        String x5u = null;
-//        if (matcher.find()) {
-//            x5u = matcher.group(1);
-//        }
-
-//        if (x5u == null) {
-//            logger.warn("Missing x5u in JWS header");
-//            return Mono.just(false);
-//        }
-
-//        if (!EXPECTED_X5U.equals(x5u)) {
-//            logger.warn("Invalid x5u URL: expected={}, received={}", EXPECTED_X5U, x5u);
-//            return Mono.just(false);
-//        }
-
-        // Encode payload (raw body) to base64url without padding
         byte[] bodyBytes = body.getBytes(StandardCharsets.UTF_8);
         String payloadB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(bodyBytes);
 
-        // Decode signature
         byte[] decodedSig = Base64.getUrlDecoder().decode(sigB64);
 
-        // Use pre-loaded signing certificate
         try {
             X509Certificate signingCert = certService.getSigningCert();
 
-            // Verify JWS signature
-            java.security.PublicKey publicKey = signingCert.getPublicKey();
+            PublicKey publicKey = signingCert.getPublicKey();
             Signature signature = Signature.getInstance("SHA256withRSA");
             signature.initVerify(publicKey);
             signature.update((headerB64 + "." + payloadB64).getBytes(StandardCharsets.UTF_8));

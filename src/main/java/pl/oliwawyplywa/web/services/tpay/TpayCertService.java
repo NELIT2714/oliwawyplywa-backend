@@ -19,8 +19,8 @@ public class TpayCertService {
     private final X509Certificate signingCert;
 
     public TpayCertService(
-        @Value("${payments.tpay.certs.jws-root}") String rootPath,
-        @Value("${payments.tpay.certs.jws-notifications}") String signingPath) throws Exception {
+        @Value("${payments.tpay.certs.jws_root}") String rootPath,
+        @Value("${payments.tpay.certs.jws_notifications}") String signingPath) throws Exception {
 
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
