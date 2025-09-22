@@ -13,9 +13,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import pl.oliwawyplywa.web.config.TpayConfig;
 import pl.oliwawyplywa.web.dto.payments.TpayTransactionCreatedResponse;
+import pl.oliwawyplywa.web.enums.OrderStatuses;
+import pl.oliwawyplywa.web.repositories.OrdersRepository;
 import pl.oliwawyplywa.web.schemas.Order;
 import pl.oliwawyplywa.web.services.OrderCalculationService;
-import pl.oliwawyplywa.web.services.TransactionService;
+import pl.oliwawyplywa.web.services.OrdersService;
 import reactor.core.publisher.Mono;
 
 import java.math.RoundingMode;
@@ -32,15 +34,17 @@ public class TpayPaymentService {
 
     private final OrderCalculationService orderCalculationService;
     private final TpaySignatureService tpaySignatureService;
-    private final TransactionService transactionService;
+    private final OrdersService ordersService;
+    private final OrdersRepository ordersRepository;
     private final TokenManager tokenManager;
 
     private final TpayConfig config;
 
-    public TpayPaymentService(OrderCalculationService orderCalculationService, TpaySignatureService tpaySignatureService, TransactionService transactionService, TokenManager tokenManager, TpayConfig config) {
+    public TpayPaymentService(OrderCalculationService orderCalculationService, TpaySignatureService tpaySignatureService, OrdersService ordersService, OrdersRepository ordersRepository, TokenManager tokenManager, TpayConfig config) {
         this.orderCalculationService = orderCalculationService;
         this.tpaySignatureService = tpaySignatureService;
-        this.transactionService = transactionService;
+        this.ordersService = ordersService;
+        this.ordersRepository = ordersRepository;
         this.tokenManager = tokenManager;
         this.config = config;
     }
@@ -112,8 +116,21 @@ public class TpayPaymentService {
                                     return Mono.just("FALSE - Invalid md5sum");
                                 }
 
-                                return transactionService.processTransaction(params)
-                                    .thenReturn("TRUE")
+                                String trCrc = params.getFirst("tr_crc");
+                                if (trCrc == null) {
+                                    logger.error("Missing tr_crc in transaction parameters");
+                                    return Mono.just("FALSE - Missing tr_crc");
+                                }
+
+                                int orderId;
+                                try {
+                                    orderId = Integer.parseInt(trCrc);
+                                } catch (NumberFormatException e) {
+                                    logger.error("Invalid tr_crc format: {}", trCrc, e);
+                                    return Mono.just("FALSE - Invalid tr_crc format");
+                                }
+
+                                return updateOrderStatus(orderId).thenReturn("TRUE")
                                     .onErrorResume(e -> {
                                         logger.error("Error processing transaction", e);
                                         return Mono.just("FALSE - Processing error");
@@ -122,6 +139,20 @@ public class TpayPaymentService {
                     });
             })
             .defaultIfEmpty("FALSE - Empty body");
+    }
+
+    private Mono<Order> updateOrderStatus(int orderId) {
+        return ordersService.getOrder(orderId)
+            .switchIfEmpty(Mono.error(new IllegalArgumentException("Order not found for ID: " + orderId)))
+            .flatMap(order -> {
+                if (order.getStatus() == OrderStatuses.PAID) {
+                    logger.info("Order {} already processed, skipping", orderId);
+                    return Mono.empty();
+                }
+                logger.info("Updating order {} status to {}", orderId, OrderStatuses.PAID);
+                order.setStatus(OrderStatuses.PAID);
+                return ordersService.getOrder(orderId).flatMap(ordersRepository::save);
+            });
     }
 
     private Mono<Boolean> verifyMd5sum(MultiValueMap<String, String> params) {
