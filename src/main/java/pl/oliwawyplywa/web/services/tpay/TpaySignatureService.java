@@ -59,6 +59,9 @@ public class TpaySignatureService {
         verifier.initVerify(signingCert.getPublicKey());
         verifier.update(signingInput.getBytes(StandardCharsets.UTF_8));
 
-        return verifier.verify(sig);
+        Boolean valid = verifier.verify(sig);
+        System.out.println(valid);
+
+        return valid;
     }
 }

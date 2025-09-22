@@ -35,8 +35,10 @@ public class TpayCallbackController {
             .flatMap(body -> {
                 try {
                     boolean ok = signatureService.verify(jws, body);
+                    System.out.println("Verification result: " + ok);
                     return Mono.just(ok ? "TRUE" : "FALSE - invalid signature");
                 } catch (Exception e) {
+                    System.out.println("Verification exception: " + e.getMessage());
                     return Mono.just("FALSE - exception: " + e.getMessage());
                 }
             });
