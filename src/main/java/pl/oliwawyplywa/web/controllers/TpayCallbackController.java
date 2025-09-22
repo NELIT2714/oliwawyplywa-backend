@@ -31,12 +31,12 @@ public class TpayCallbackController {
                 return new String(bytes, StandardCharsets.UTF_8);
             })
             .flatMap(body -> {
-                try {
-                    boolean ok = signatureService.verify(jws, body);
-                    return Mono.just(ok ? "TRUE" : "FALSE - invalid signature");
-                } catch (Exception e) {
-                    return Mono.just("FALSE - exception: " + e.getMessage());
-                }
+                // логируем body
+                System.out.println("[CALLBACK BODY] " + body);
+                return Mono.fromCallable(() -> signatureService.verify(jws, body))
+                    .map(ok -> ok ? "TRUE" : "FALSE - invalid signature")
+                    .doOnError(e -> System.out.println("[CALLBACK ERROR] " + e.getClass().getSimpleName() + ": " + e.getMessage()))
+                    .onErrorReturn("FALSE - exception during verification");
             });
     }
 }
