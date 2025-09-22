@@ -42,7 +42,7 @@ public class TpayCallbackController {
 
                 return Mono.fromCallable(() -> {
                         try {
-                            boolean valid = signatureService.verify(jws, bodyBytes);
+                            boolean valid = signatureService.verifyWithNimbus(jws, bodyBytes);
                             System.out.println("[TPAY] Signature valid? " + valid);
                             return valid;
                         } catch (Exception e) {

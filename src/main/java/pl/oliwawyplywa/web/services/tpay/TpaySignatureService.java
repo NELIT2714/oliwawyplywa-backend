@@ -1,6 +1,8 @@
 package pl.oliwawyplywa.web.services.tpay;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -10,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
@@ -24,33 +27,20 @@ public class TpaySignatureService {
         this.certService = certService;
     }
 
-    public boolean verify(String jws) {
-        try {
-            if (jws == null || jws.isEmpty()) return false;
+    public boolean verifyWithNimbus(String jws, byte[] rawBodyBytes) throws Exception {
+        if (jws == null || jws.isEmpty()) return false;
 
-            // Парсим JWS
-            JWSObject jwsObject = JWSObject.parse(jws);
+        X509Certificate signingCert = certService.getSigningCert();
+        RSAPublicKey rsaPubKey = (RSAPublicKey) signingCert.getPublicKey();
 
-            // Берем локальный сертификат Tpay
-            X509Certificate signingCert = certService.getSigningCert();
+        // Собираем полный JWS: header..payload..signature
+        String payloadB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(rawBodyBytes);
+        String fullJws = jws.split("\\.")[0] + "." + payloadB64 + "." + jws.split("\\.")[2];
 
-            // Создаем верификатор для RSA
-            RSASSAVerifier verifier = new RSASSAVerifier(signingCert.getPublicKey());
+        JWSObject jwsObject = JWSObject.parse(fullJws);
+        RSASSAVerifier verifier = new RSASSAVerifier(rsaPubKey);
 
-            // Проверяем подпись
-            boolean valid = jwsObject.verify(verifier);
-
-            if (!valid) {
-                System.out.println("[TPAY ERROR] Invalid JWS signature");
-                System.out.println("Payload: " + jwsObject.getPayload().toString());
-            }
-
-            return valid;
-
-        } catch (Exception e) {
-            System.out.println("[TPAY ERROR] Exception during signature verification: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
+        return jwsObject.verify(verifier);
     }
+
 }
