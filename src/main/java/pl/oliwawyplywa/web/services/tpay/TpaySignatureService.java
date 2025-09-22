@@ -53,7 +53,7 @@ public class TpaySignatureService {
         String bodyUtf8 = new String(rawBodyBytes, StandardCharsets.UTF_8);
 
         String payloadB64 = Base64.getUrlEncoder().withoutPadding()
-            .encodeToString(bodyUtf8.getBytes(StandardCharsets.UTF_8));
+            .encodeToString(rawBodyBytes);
 
         String signingInput = headerB64 + "." + payloadB64;
 
