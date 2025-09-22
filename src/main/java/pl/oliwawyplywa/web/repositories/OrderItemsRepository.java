@@ -16,4 +16,14 @@ public interface OrderItemsRepository extends ReactiveCrudRepository<OrderItem, 
     Mono<BigDecimal> calculateTotalByOrderId(@Param("orderId") int orderId);
 
     Flux<OrderItem> getOrderItemsByOrderId(int orderId);
+
+    @Query("""
+        SELECT oi.id_item, oi.id_order, oi.id_product_option, oi.quantity, oi.price,
+               p.product_name, po.option_name
+        FROM tbl_order_items oi
+        JOIN tbl_product_options po ON oi.id_product_option = po.id_product_option
+        JOIN tbl_products p ON po.id_product = p.id_product
+        WHERE oi.id_order = :orderId
+    """)
+    Flux<OrderItem> getOrderItemsWithOptionsByOrderId(int orderId);
 }

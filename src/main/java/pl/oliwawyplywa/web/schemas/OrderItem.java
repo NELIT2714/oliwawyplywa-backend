@@ -25,6 +25,9 @@ public class OrderItem {
     @Column("price")
     private BigDecimal price;
 
+    private String productName;
+    private String optionName;
+
     public OrderItem(int orderId, int productOptionId, int quantity, BigDecimal price) {
         this.orderId = orderId;
         this.productOptionId = productOptionId;
@@ -66,5 +69,21 @@ public class OrderItem {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setOptionName(String optionName) {
+        this.optionName = optionName;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public String getOptionName() {
+        return optionName;
     }
 }

@@ -58,24 +58,16 @@
             <h2>Szczegóły Twojego zamówienia</h2>
             <table width="100%" border="1" cellspacing="0" cellpadding="5">
               <tr>
-                <td>Imię:</td>
-                <td th:text="${userFirstName}">Jan</td>
-              </tr>
-              <tr>
-                <td>Nazwisko:</td>
-                <td th:text="${userLastName}">Kowalski</td>
+                <td>Imię Nazwisko:</td>
+                <td th:text="${userFullName}">Jan</td>
               </tr>
               <tr>
                 <td>Adres:</td>
                 <td th:text="${userAddress}">ul. Przykładowa 1, Warszawa</td>
               </tr>
               <tr>
-                <td>E-mail:</td>
-                <td th:text="${userEmail}">jan.kowalski@example.com</td>
-              </tr>
-              <tr>
                 <td>Telefon:</td>
-                <td th:text="${userPhone}">+48 123 456 789</td>
+                <td>+48 123 456 789</td>
               </tr>
             </table>
           </td>
@@ -90,21 +82,21 @@
                 <th>Nazwa produktu</th>
                 <th>Ilość</th>
                 <th>Cena</th>
-                <th>Suma częściowa</th>
+                <th>Suma</th>
               </tr>
               </thead>
               <tbody>
               <tr th:each="product : ${products}">
-                <td th:text="${product.productName}">Oliwa Extra Virgin</td>
-                <td th:text="${product.quantity}">1</td>
-                <td th:text="${product.price} + ' PLN'">0.00 PLN</td>
-                <td th:text="${product.subtotal} + ' PLN'">0.00 PLN</td>
+                <td th:text="${product.getProductName()}">Oliwa Extra Virgin</td>
+<!--                <td th:text="${product.quantity}">1</td>-->
+<!--                <td th:text="${product.price} + ' PLN'">0.00 PLN</td>-->
+<!--                <td th:text="${product.subtotal} + ' PLN'">0.00 PLN</td>-->
               </tr>
               </tbody>
               <tfoot>
               <tr>
-                <td colspan="3" align="right"><strong>Razem:</strong></td>
-                <td th:text="${total} + ' PLN'">0.00 PLN</td>
+<!--                <td colspan="3" align="right"><strong>Razem:</strong></td>-->
+<!--                <td th:text="${total} + ' PLN'">0.00 PLN</td>-->
               </tr>
               </tfoot>
             </table>
