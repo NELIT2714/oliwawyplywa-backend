@@ -24,16 +24,14 @@ public class TpayCallbackController {
                                        ServerHttpRequest request) {
 
         return DataBufferUtils.join(request.getBody())
-            .map(dataBuffer -> {
-                byte[] bytes = new byte[dataBuffer.readableByteCount()];
-                dataBuffer.read(bytes);
+            .flatMap(dataBuffer -> {
+                byte[] bodyBytes = new byte[dataBuffer.readableByteCount()];
+                dataBuffer.read(bodyBytes);
                 DataBufferUtils.release(dataBuffer);
-                return new String(bytes, StandardCharsets.UTF_8);
-            })
-            .flatMap(body -> {
-                // логируем body
-                System.out.println("[CALLBACK BODY] " + body);
-                return Mono.fromCallable(() -> signatureService.verify(jws, body))
+
+                System.out.println("[CALLBACK BODY (raw)] " + new String(bodyBytes, StandardCharsets.UTF_8));
+
+                return Mono.fromCallable(() -> signatureService.verify(jws, bodyBytes))
                     .map(ok -> ok ? "TRUE" : "FALSE - invalid signature")
                     .doOnError(e -> System.out.println("[CALLBACK ERROR] " + e.getClass().getSimpleName() + ": " + e.getMessage()))
                     .onErrorReturn("FALSE - exception during verification");

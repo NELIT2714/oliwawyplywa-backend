@@ -22,12 +22,10 @@ public class TpaySignatureService {
         this.certService = certService;
     }
 
-    public boolean verify(String jws, String rawBody) throws Exception {
+    public boolean verify(String jws, byte[] rawBodyBytes) throws Exception {
         if (jws == null || jws.isEmpty()) return false;
 
-        // Убираем возможные пробелы
         jws = jws.trim();
-
         String[] parts = jws.split("\\.");
         if (parts.length != 3) return false;
 
@@ -50,17 +48,14 @@ public class TpaySignatureService {
         // validate chain
         certService.verifyCertificateChain(signingCert);
 
-        // тело -> base64url без padding
+        // body -> base64url без padding (берём напрямую raw байты)
         String payloadB64 = Base64.getUrlEncoder().withoutPadding()
-            .encodeToString(rawBody.getBytes(StandardCharsets.UTF_8));
+            .encodeToString(rawBodyBytes);
 
-        // данные для подписи
         String signingInput = headerB64 + "." + payloadB64;
 
-        // сигнатура
         byte[] sig = Base64.getUrlDecoder().decode(signatureB64);
 
-        // верификация (ASCII!)
         Signature verifier = Signature.getInstance("SHA256withRSA");
         verifier.initVerify(signingCert.getPublicKey());
         verifier.update(signingInput.getBytes(StandardCharsets.US_ASCII));

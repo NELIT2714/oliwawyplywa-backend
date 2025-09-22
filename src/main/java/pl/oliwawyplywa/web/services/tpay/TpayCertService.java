@@ -26,9 +26,12 @@ public class TpayCertService {
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
         this.rootCert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(rootBytes));
+        System.out.println("Tpay root certificate loaded: " + rootCert.getSubjectDN());
     }
 
     public void verifyCertificateChain(X509Certificate signingCert) throws Exception {
+        // просто проверяем подпись signingCert через rootCert
         signingCert.verify(rootCert.getPublicKey());
+        System.out.println("Signing certificate verified against root");
     }
 }
