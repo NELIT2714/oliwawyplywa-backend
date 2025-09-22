@@ -81,16 +81,14 @@
               <tr>
                 <th>Nazwa produktu</th>
                 <th>Ilość</th>
-                <th>Cena</th>
                 <th>Suma</th>
               </tr>
               </thead>
               <tbody>
               <tr th:each="product : ${products}">
                 <td th:text="${product.getProductName()}">Oliwa Extra Virgin</td>
-<!--                <td th:text="${product.quantity}">1</td>-->
-<!--                <td th:text="${product.price} + ' PLN'">0.00 PLN</td>-->
-<!--                <td th:text="${product.subtotal} + ' PLN'">0.00 PLN</td>-->
+                <td th:text="${product.quantity}">1</td>
+                <td th:text="${product.price * product.quantity} + ' PLN'">0.00 PLN</td>
               </tr>
               </tbody>
               <tfoot>
