@@ -22,6 +22,9 @@ public class TpayCallbackController {
     @PostMapping(value = "/callback", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public Mono<String> handleCallback(@RequestHeader("X-JWS-Signature") String jws,
                                        ServerHttpRequest request) {
+        System.out.println(jws);
+        System.out.println(request);
+        System.out.println(request.getBody());
         return DataBufferUtils.join(request.getBody())
             .map(dataBuffer -> {
                 byte[] bytes = new byte[dataBuffer.readableByteCount()];
