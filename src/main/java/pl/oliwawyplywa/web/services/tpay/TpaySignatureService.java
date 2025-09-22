@@ -25,8 +25,8 @@ public class TpaySignatureService {
     public boolean verify(String jws, String rawBody) throws Exception {
         if (jws == null || jws.isEmpty()) return false;
 
-        System.out.println(jws);
-        System.out.println(rawBody);
+        // Убираем возможные пробелы
+        jws = jws.trim();
 
         String[] parts = jws.split("\\.");
         if (parts.length != 3) return false;
@@ -38,12 +38,9 @@ public class TpaySignatureService {
         String headerJson = new String(Base64.getUrlDecoder().decode(headerB64), StandardCharsets.UTF_8);
         Map<String, Object> header = new ObjectMapper().readValue(headerJson, Map.class);
 
-        System.out.println("123");
-
         if (!header.containsKey("x5u")) return false;
         String x5u = header.get("x5u").toString();
-        System.out.println(x5u);
-//        if (!x5u.startsWith("https://secure.tpay.com")) return false;
+        if (!x5u.startsWith("https://secure.tpay.com")) return false;
 
         // load signing cert
         byte[] certBytes = URI.create(x5u).toURL().openStream().readAllBytes();
@@ -53,20 +50,23 @@ public class TpaySignatureService {
         // validate chain
         certService.verifyCertificateChain(signingCert);
 
-        // body już jest form-urlencoded → bierzemy wprost
+        // тело -> base64url без padding
         String payloadB64 = Base64.getUrlEncoder().withoutPadding()
             .encodeToString(rawBody.getBytes(StandardCharsets.UTF_8));
 
+        // данные для подписи
         String signingInput = headerB64 + "." + payloadB64;
 
+        // сигнатура
         byte[] sig = Base64.getUrlDecoder().decode(signatureB64);
 
+        // верификация (ASCII!)
         Signature verifier = Signature.getInstance("SHA256withRSA");
         verifier.initVerify(signingCert.getPublicKey());
-        verifier.update(signingInput.getBytes(StandardCharsets.UTF_8));
+        verifier.update(signingInput.getBytes(StandardCharsets.US_ASCII));
 
-        Boolean valid = verifier.verify(sig);
-        System.out.println(valid);
+        boolean valid = verifier.verify(sig);
+        System.out.println("Signature valid? " + valid);
 
         return valid;
     }

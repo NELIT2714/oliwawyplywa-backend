@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.PublicKey;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class TpayCertService {
@@ -29,7 +29,14 @@ public class TpayCertService {
     }
 
     public void verifyCertificateChain(X509Certificate signingCert) throws Exception {
-        PublicKey rootKey = rootCert.getPublicKey();
-        signingCert.verify(rootKey);
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        CertPath certPath = cf.generateCertPath(List.of(signingCert));
+
+        TrustAnchor anchor = new TrustAnchor(rootCert, null);
+        PKIXParameters params = new PKIXParameters(Set.of(anchor));
+        params.setRevocationEnabled(false);
+
+        CertPathValidator validator = CertPathValidator.getInstance("PKIX");
+        validator.validate(certPath, params);
     }
 }
