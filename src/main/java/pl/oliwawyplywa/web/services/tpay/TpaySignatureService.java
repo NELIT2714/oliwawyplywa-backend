@@ -43,7 +43,7 @@ public class TpaySignatureService {
         if (!header.containsKey("x5u")) return false;
         String x5u = header.get("x5u").toString();
         System.out.println(x5u);
-        if (!x5u.startsWith("https://secure.tpay.com")) return false;
+//        if (!x5u.startsWith("https://secure.tpay.com")) return false;
 
         // load signing cert
         byte[] certBytes = URI.create(x5u).toURL().openStream().readAllBytes();
