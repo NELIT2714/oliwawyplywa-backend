@@ -24,55 +24,33 @@ public class TpaySignatureService {
         this.certService = certService;
     }
 
-    public boolean verify(String jws, byte[] rawBodyBytes) throws Exception {
-        if (jws == null || jws.isEmpty()) return false;
+    public boolean verify(String jws) {
+        try {
+            if (jws == null || jws.isEmpty()) return false;
 
-        String[] parts = jws.split("\\.");
-        if (parts.length != 3) return false;
+            // Парсим JWS
+            JWSObject jwsObject = JWSObject.parse(jws);
 
-        String headerB64 = parts[0];
-        String signatureB64 = parts[2];
+            // Берем локальный сертификат Tpay
+            X509Certificate signingCert = certService.getSigningCert();
 
-        // Декодируем header
-        String headerJson = new String(Base64.getUrlDecoder().decode(headerB64), StandardCharsets.UTF_8);
-        Map<String, Object> header = new ObjectMapper().readValue(headerJson, Map.class);
+            // Создаем верификатор для RSA
+            RSASSAVerifier verifier = new RSASSAVerifier(signingCert.getPublicKey());
 
-        if (!header.containsKey("x5u")) return false;
+            // Проверяем подпись
+            boolean valid = jwsObject.verify(verifier);
 
-        // Берем локальный сертификат подписи
-        X509Certificate signingCert = certService.getSigningCert();
+            if (!valid) {
+                System.out.println("[TPAY ERROR] Invalid JWS signature");
+                System.out.println("Payload: " + jwsObject.getPayload().toString());
+            }
 
-        // --- Canonical form payload ---
-        String bodyStr = new String(rawBodyBytes, StandardCharsets.ISO_8859_1); // Tpay присылает в ISO-8859-1
-        Map<String, String> params = Arrays.stream(bodyStr.split("&"))
-            .map(s -> s.split("=", 2))
-            .collect(Collectors.toMap(
-                a -> a[0],
-                a -> a.length > 1 ? URLDecoder.decode(a[1], StandardCharsets.UTF_8) : ""
-            ));
+            return valid;
 
-        // Сортируем параметры по ключам (строго)
-        String canonicalPayload = params.entrySet().stream()
-            .sorted(Map.Entry.comparingByKey())
-            .map(e -> e.getKey() + "=" + e.getValue())
-            .collect(Collectors.joining("&"));
-
-        // Base64url
-        String payloadB64 = Base64.getUrlEncoder().withoutPadding()
-            .encodeToString(canonicalPayload.getBytes(StandardCharsets.UTF_8));
-
-        byte[] sig = Base64.getUrlDecoder().decode(signatureB64);
-
-        Signature verifier = Signature.getInstance("SHA256withRSA");
-        verifier.initVerify(signingCert.getPublicKey());
-        verifier.update((headerB64 + "." + payloadB64).getBytes(StandardCharsets.US_ASCII));
-
-        boolean valid = verifier.verify(sig);
-
-        if (!valid) {
-            System.out.println("[TPAY ERROR] Invalid JWS signature for payload: " + canonicalPayload);
+        } catch (Exception e) {
+            System.out.println("[TPAY ERROR] Exception during signature verification: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
-
-        return valid;
     }
 }
