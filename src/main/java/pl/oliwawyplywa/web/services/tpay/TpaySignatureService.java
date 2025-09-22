@@ -2,7 +2,9 @@ package pl.oliwawyplywa.web.services.tpay;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.util.Base64URL;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -27,17 +29,29 @@ public class TpaySignatureService {
         this.certService = certService;
     }
 
+
     public boolean verifyWithNimbus(String jws, byte[] rawBodyBytes) throws Exception {
         if (jws == null || jws.isEmpty()) return false;
+
+        String[] parts = jws.split("\\.");
+        if (parts.length != 3) return false;
+
+        String headerB64 = parts[0];
+        String signatureB64 = parts[2];
 
         X509Certificate signingCert = certService.getSigningCert();
         RSAPublicKey rsaPubKey = (RSAPublicKey) signingCert.getPublicKey();
 
-        // Собираем полный JWS: header..payload..signature
-        String payloadB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(rawBodyBytes);
-        String fullJws = jws.split("\\.")[0] + "." + payloadB64 + "." + jws.split("\\.")[2];
+        // Payload как Base64URL из raw body
+        Base64URL payloadB64 = Base64URL.encode(rawBodyBytes);
 
-        JWSObject jwsObject = JWSObject.parse(fullJws);
+        // Создаём JWSObject с payload
+        JWSObject jwsObject = new JWSObject(
+            new Base64URL(headerB64),
+            new Payload(payloadB64),
+            new Base64URL(signatureB64)
+        );
+
         RSASSAVerifier verifier = new RSASSAVerifier(rsaPubKey);
 
         return jwsObject.verify(verifier);
