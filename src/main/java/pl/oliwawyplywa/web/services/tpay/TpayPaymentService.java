@@ -4,15 +4,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 import pl.oliwawyplywa.web.config.TpayConfig;
 import pl.oliwawyplywa.web.dto.payments.TpayTransactionCreatedResponse;
 import pl.oliwawyplywa.web.schemas.Order;
 import pl.oliwawyplywa.web.services.OrderCalculationService;
+import pl.oliwawyplywa.web.services.TransactionService;
 import reactor.core.publisher.Mono;
 
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Service
@@ -21,12 +26,16 @@ public class TpayPaymentService {
     private static final Logger logger = LoggerFactory.getLogger(TpayPaymentService.class);
 
     private final OrderCalculationService orderCalculationService;
+    private final TpaySignatureService tpaySignatureService;
+    private final TransactionService transactionService;
     private final TokenManager tokenManager;
 
     private final TpayConfig config;
 
-    public TpayPaymentService(OrderCalculationService orderCalculationService, TokenManager tokenManager, TpayConfig config) {
+    public TpayPaymentService(OrderCalculationService orderCalculationService, TpaySignatureService tpaySignatureService, TransactionService transactionService, TokenManager tokenManager, TpayConfig config) {
         this.orderCalculationService = orderCalculationService;
+        this.tpaySignatureService = tpaySignatureService;
+        this.transactionService = transactionService;
         this.tokenManager = tokenManager;
         this.config = config;
     }
@@ -61,5 +70,58 @@ public class TpayPaymentService {
                             .doOnError(error -> logger.error("Error creating transaction for order {}: {}", order.getOrderId(), error.getMessage()))
                     );
             });
+    }
+
+    public Mono<String> handleCallback(String jws, ServerHttpRequest request) {
+        // Read raw body asynchronously for JWS verification
+        return request.getBody()
+            .reduce("", (accumulated, dataBuffer) -> {
+                byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                dataBuffer.read(bytes);
+                return accumulated + new String(bytes, StandardCharsets.UTF_8);
+            })
+            .flatMap(body -> {
+                logger.debug("Received raw body: {}", body);
+                return tpaySignatureService.verifySignature(jws, body)
+                    .flatMap(isValid -> {
+                        if (!isValid) {
+                            logger.warn("JWS signature verification failed");
+                            return Mono.just("FALSE - Invalid JWS signature");
+                        }
+
+                        // Parse the form-urlencoded body into params
+                        MultiValueMap<String, String> params = UriComponentsBuilder.newInstance()
+                            .query(body)
+                            .build()
+                            .getQueryParams();
+
+                        // Verify md5sum
+                        String id = params.getFirst("id");
+                        String trId = params.getFirst("tr_id");
+                        String trAmount = params.getFirst("tr_amount");
+                        String trCrc = params.getFirst("tr_crc");
+                        String md5sumReceived = params.getFirst("md5sum");
+
+                        if (id == null || trId == null || trAmount == null || trCrc == null || md5sumReceived == null) {
+                            logger.warn("Missing required parameters for md5sum verification");
+                            return Mono.just("FALSE - Missing parameters");
+                        }
+
+                        String computedMd5 = DigestUtils.md5Hex(id + trId + trAmount + trCrc + securityCode);
+                        if (!computedMd5.equals(md5sumReceived)) {
+                            logger.warn("md5sum verification failed: computed={}, received={}", computedMd5, md5sumReceived);
+                            return Mono.just("FALSE - Invalid md5sum");
+                        }
+
+                        // Process the transaction idempotently
+                        return transactionService.processTransaction(params)
+                            .thenReturn("TRUE")
+                            .onErrorResume(e -> {
+                                logger.error("Error processing transaction", e);
+                                return Mono.just("FALSE - Processing error");
+                            });
+                    });
+            })
+            .defaultIfEmpty("FALSE - Empty body");
     }
 }

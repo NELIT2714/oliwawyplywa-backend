@@ -122,9 +122,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.nimbusds</groupId>
-            <artifactId>nimbus-jose-jwt</artifactId>
-            <version>9.32</version>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.17.1</version> <!-- Убедитесь, что используете актуальную версию -->
         </dependency>
     </dependencies>
 
