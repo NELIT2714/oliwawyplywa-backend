@@ -2,11 +2,9 @@ package pl.oliwawyplywa.web.services;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import pl.oliwawyplywa.web.dto.orders.CreateOrder;
 import pl.oliwawyplywa.web.dto.orders.OrderItemDTO;
 import pl.oliwawyplywa.web.dto.orders.OrderResponse;
-import pl.oliwawyplywa.web.dto.payments.TpayTransactionCreatedResponse;
 import pl.oliwawyplywa.web.enums.OrderStatuses;
 import pl.oliwawyplywa.web.exceptions.HTTPException;
 import pl.oliwawyplywa.web.repositories.OrderItemsRepository;
@@ -14,7 +12,6 @@ import pl.oliwawyplywa.web.repositories.OrdersRepository;
 import pl.oliwawyplywa.web.repositories.ProductOptionsRepository;
 import pl.oliwawyplywa.web.schemas.Order;
 import pl.oliwawyplywa.web.schemas.OrderItem;
-import pl.oliwawyplywa.web.services.tpay.TpayPaymentService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

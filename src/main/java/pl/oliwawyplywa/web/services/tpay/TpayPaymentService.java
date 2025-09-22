@@ -151,7 +151,7 @@ public class TpayPaymentService {
                 }
                 logger.info("Updating order {} status to {}", orderId, OrderStatuses.PAID);
                 order.setStatus(OrderStatuses.PAID);
-                return ordersService.getOrder(orderId).flatMap(ordersRepository::save);
+                return ordersRepository.save(order);
             });
     }
 
