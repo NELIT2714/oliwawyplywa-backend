@@ -48,9 +48,12 @@ public class TpaySignatureService {
         // validate chain
         certService.verifyCertificateChain(signingCert);
 
-        // body -> base64url без padding (берём напрямую raw байты)
+        // ✅ ТУТ ИСПРАВЛЕНО
+        // тело нужно интерпретировать как UTF-8, а потом закодировать в base64url
+        String bodyUtf8 = new String(rawBodyBytes, StandardCharsets.UTF_8);
+
         String payloadB64 = Base64.getUrlEncoder().withoutPadding()
-            .encodeToString(rawBodyBytes);
+            .encodeToString(bodyUtf8.getBytes(StandardCharsets.UTF_8));
 
         String signingInput = headerB64 + "." + payloadB64;
 
