@@ -63,7 +63,7 @@ public class OrdersController {
     )
     @GetMapping("/{id}")
     public Mono<ResponseEntity<Map<String, Object>>> getOrder(@PathVariable("id") int orderId) {
-        return ordersService.getOrder(orderId).map(order -> ResponseEntity.ok(Map.of("status", true, "order", order)));
+        return ordersService.getOrderResponse(orderId).map(order -> ResponseEntity.ok(Map.of("status", true, "order", order)));
     }
 
     @Operation(

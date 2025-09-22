@@ -36,7 +36,11 @@ public class OrdersService {
         this.tpayPaymentService = tpayPaymentService;
     }
 
-    public Mono<OrderResponse> getOrder(int orderId) {
+    public Mono<Order> getOrder(int orderId) {
+        return ordersRepository.findById(orderId);
+    }
+
+    public Mono<OrderResponse> getOrderResponse(int orderId) {
         return ordersRepository.getOrderByOrderId(orderId)
             .flatMap(order -> {
                 OrderResponse orderResponse = new OrderResponse(order);
