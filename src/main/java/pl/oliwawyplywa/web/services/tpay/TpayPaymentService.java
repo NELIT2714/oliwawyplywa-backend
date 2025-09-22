@@ -53,7 +53,18 @@ public class TpayPaymentService {
                     "description", "Transakcja na zamówienie #%d".formatted(order.getOrderId()),
                     "payer", Map.of(
                         "email", order.getEmail(),
-                        "name", order.getFullName()
+                        "name", order.getFullName(),
+                        "address", order.getAddress()
+                    ),
+                    "callbacks", Map.of(
+                        "payerUrls", Map.of(
+                            "success", "https://oliwawyplywa.pl/",
+                            "error", "https://oliwawyplywa.pl/"
+                        ),
+                        "notificationUrls", Map.of(
+                            "url", "https://api.dba-agency.com/v1/tpay/callback",
+                            "email", order.getEmail()
+                        )
                     ),
                     "currency", "PLN"
                 );
