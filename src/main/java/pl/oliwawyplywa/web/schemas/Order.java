@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import pl.oliwawyplywa.web.enums.OrderStatuses;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Table("tbl_orders")
 public class Order {
@@ -30,7 +31,7 @@ public class Order {
 
     @Column("created_at")
     @JsonProperty("created_at")
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     public Order(String email, String fullName, String address, OrderStatuses status) {
         this.email = email;
