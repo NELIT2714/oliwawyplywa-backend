@@ -21,15 +21,22 @@ public class TpayCallbackController {
 
     @PostMapping(value = "/callback", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public Mono<String> handleCallback(@RequestHeader("X-JWS-Signature") String jws,
-                                       @RequestBody Mono<String> bodyMono) {
-        return bodyMono.flatMap(body -> {
-            System.out.println("RAW BODY: " + body);
-            try {
-                boolean ok = signatureService.verify(jws, body);
-                return Mono.just(ok ? "TRUE" : "FALSE - invalid signature");
-            } catch (Exception e) {
-                return Mono.just("FALSE - exception: " + e.getMessage());
-            }
-        });
+                                       ServerHttpRequest request) {
+
+        return DataBufferUtils.join(request.getBody())
+            .map(dataBuffer -> {
+                byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                dataBuffer.read(bytes);
+                DataBufferUtils.release(dataBuffer);
+                return new String(bytes, StandardCharsets.UTF_8);
+            })
+            .flatMap(body -> {
+                try {
+                    boolean ok = signatureService.verify(jws, body);
+                    return Mono.just(ok ? "TRUE" : "FALSE - invalid signature");
+                } catch (Exception e) {
+                    return Mono.just("FALSE - exception: " + e.getMessage());
+                }
+            });
     }
 }

@@ -25,6 +25,9 @@ public class TpaySignatureService {
     public boolean verify(String jws, String rawBody) throws Exception {
         if (jws == null || jws.isEmpty()) return false;
 
+        System.out.println(jws);
+        System.out.println(rawBody);
+
         String[] parts = jws.split("\\.");
         if (parts.length != 3) return false;
 
@@ -35,8 +38,11 @@ public class TpaySignatureService {
         String headerJson = new String(Base64.getUrlDecoder().decode(headerB64), StandardCharsets.UTF_8);
         Map<String, Object> header = new ObjectMapper().readValue(headerJson, Map.class);
 
+        System.out.println("123");
+
         if (!header.containsKey("x5u")) return false;
         String x5u = header.get("x5u").toString();
+        System.out.println(x5u);
         if (!x5u.startsWith("https://secure.tpay.com")) return false;
 
         // load signing cert
