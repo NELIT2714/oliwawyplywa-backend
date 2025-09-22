@@ -51,7 +51,7 @@ public class TpayPaymentService {
                 Map<String, Object> requestBody = Map.of(
                     "amount", totalAmount.setScale(2, RoundingMode.HALF_UP).doubleValue(),
                     "description", "Transakcja na zamówienie #%d".formatted(order.getOrderId()),
-                    "hiddenDescription", order.getOrderId(),
+                    "hiddenDescription", String.valueOf(order.getOrderId()),
                     "payer", Map.of(
                         "email", order.getEmail(),
                         "name", order.getFullName(),
