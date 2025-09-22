@@ -58,6 +58,7 @@ payments:
     client_secret: ${PAYMENTS_TPAY_CLIENT_SECRET}
     certs:
       jws-root: ${PAYMENTS_TPAY_CERTS_JWS_ROOT}
+      jws-notifications: ${PAYMENTS_TPAY_CERTS_JWS_NOTIFICATIONS}
 
 
 cdn:

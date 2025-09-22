@@ -25,47 +25,29 @@ public class TpaySignatureService {
     public boolean verify(String jws, byte[] rawBodyBytes) throws Exception {
         if (jws == null || jws.isEmpty()) return false;
 
-        jws = jws.trim();
         String[] parts = jws.split("\\.");
         if (parts.length != 3) return false;
 
         String headerB64 = parts[0];
         String signatureB64 = parts[2];
 
-        // decode header JSON
         String headerJson = new String(Base64.getUrlDecoder().decode(headerB64), StandardCharsets.UTF_8);
         Map<String, Object> header = new ObjectMapper().readValue(headerJson, Map.class);
 
         if (!header.containsKey("x5u")) return false;
-        String x5u = header.get("x5u").toString();
-//        if (!x5u.startsWith("https://secure.tpay.com")) return false;
 
-        // load signing cert
-        byte[] certBytes = URI.create(x5u).toURL().openStream().readAllBytes();
-        X509Certificate signingCert = (X509Certificate) CertificateFactory.getInstance("X.509")
-            .generateCertificate(new ByteArrayInputStream(certBytes));
+        // Получаем локальный сертификат
+        X509Certificate signingCert = certService.getSigningCert();
 
-        // validate chain
-        certService.verifyCertificateChain(signingCert);
-
-        // ✅ ТУТ ИСПРАВЛЕНО
-        // тело нужно интерпретировать как UTF-8, а потом закодировать в base64url
-        String bodyUtf8 = new String(rawBodyBytes, StandardCharsets.UTF_8);
-
-        String payloadB64 = Base64.getUrlEncoder().withoutPadding()
-            .encodeToString(bodyUtf8.getBytes(StandardCharsets.UTF_8));
-
-        String signingInput = headerB64 + "." + payloadB64;
+        // payload
+        String payloadB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(new String(rawBodyBytes, StandardCharsets.UTF_8).getBytes(StandardCharsets.UTF_8));
 
         byte[] sig = Base64.getUrlDecoder().decode(signatureB64);
 
         Signature verifier = Signature.getInstance("SHA256withRSA");
         verifier.initVerify(signingCert.getPublicKey());
-        verifier.update(signingInput.getBytes(StandardCharsets.US_ASCII));
+        verifier.update((headerB64 + "." + payloadB64).getBytes(StandardCharsets.US_ASCII));
 
-        boolean valid = verifier.verify(sig);
-        System.out.println("Signature valid? " + valid);
-
-        return valid;
+        return verifier.verify(sig);
     }
 }
