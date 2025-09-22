@@ -27,13 +27,11 @@ public class OrdersService {
     private final OrdersRepository ordersRepository;
     private final OrderItemsRepository orderItemsRepository;
     private final ProductOptionsRepository productOptionRepository;
-    private final TpayPaymentService tpayPaymentService;
 
-    public OrdersService(OrdersRepository ordersRepository, OrderItemsRepository orderItemsRepository, ProductOptionsRepository productOptionRepository, TpayPaymentService tpayPaymentService) {
+    public OrdersService(OrdersRepository ordersRepository, OrderItemsRepository orderItemsRepository, ProductOptionsRepository productOptionRepository) {
         this.ordersRepository = ordersRepository;
         this.orderItemsRepository = orderItemsRepository;
         this.productOptionRepository = productOptionRepository;
-        this.tpayPaymentService = tpayPaymentService;
     }
 
     public Mono<Order> getOrder(int orderId) {
@@ -64,15 +62,7 @@ public class OrdersService {
             });
     }
 
-
-    @Transactional
-    public Mono<String> createOrder(CreateOrder createOrderDTO) {
-        Order order = createOrderFromDTO(createOrderDTO);
-        return saveOrderAndProcessItems(order, createOrderDTO.getProducts())
-            .flatMap(this::createTransactionAndGetPaymentUrl);
-    }
-
-    private Order createOrderFromDTO(CreateOrder createOrderDTO) {
+    public Order createOrderFromDTO(CreateOrder createOrderDTO) {
         return new Order(
             createOrderDTO.getEmail(),
             createOrderDTO.getFullName(),
@@ -81,7 +71,7 @@ public class OrdersService {
         );
     }
 
-    private Mono<Order> saveOrderAndProcessItems(Order order, List<OrderItemDTO> products) {
+    public Mono<Order> saveOrderAndProcessItems(Order order, List<OrderItemDTO> products) {
         return ordersRepository.save(order)
             .flatMap(savedOrder ->
                 createOrderItems(savedOrder, products)
@@ -105,10 +95,5 @@ public class OrdersService {
                     ))
                     .switchIfEmpty(Mono.error(new HTTPException(HttpStatus.NOT_FOUND, "Product option " + product.getProductOptionId() + " not found")))
             );
-    }
-
-    private Mono<String> createTransactionAndGetPaymentUrl(Order order) {
-        return tpayPaymentService.createTransaction(order)
-            .map(TpayTransactionCreatedResponse::getTransactionPaymentUrl);
     }
 }

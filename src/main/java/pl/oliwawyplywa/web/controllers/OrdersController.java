@@ -6,12 +6,16 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.oliwawyplywa.web.dto.orders.CreateOrder;
+import pl.oliwawyplywa.web.dto.payments.TpayTransactionCreatedResponse;
 import pl.oliwawyplywa.web.schemas.Category;
+import pl.oliwawyplywa.web.schemas.Order;
 import pl.oliwawyplywa.web.services.OrdersService;
+import pl.oliwawyplywa.web.services.tpay.TpayPaymentService;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -23,9 +27,11 @@ import java.util.Map;
 public class OrdersController {
 
     private final OrdersService ordersService;
+    private TpayPaymentService tpayPaymentService;
 
-    public OrdersController(OrdersService ordersService) {
+    public OrdersController(OrdersService ordersService, TpayPaymentService tpayPaymentService) {
         this.ordersService = ordersService;
+        this.tpayPaymentService = tpayPaymentService;
     }
 
     @Operation(summary = "Get order by ID")
@@ -116,6 +122,14 @@ public class OrdersController {
     )
     @PostMapping
     public Mono<ResponseEntity<Map<String, Object>>> createOrder(@RequestBody CreateOrder createOrderDTO) {
-        return ordersService.createOrder(createOrderDTO).map(paymentUrl -> ResponseEntity.ok(Map.of("status", true, "payment_url", paymentUrl)));
+        Order order = ordersService.createOrderFromDTO(createOrderDTO);
+        return ordersService.saveOrderAndProcessItems(order, createOrderDTO.getProducts())
+            .flatMap(savedOrder -> tpayPaymentService.createTransaction(savedOrder)
+                .map(TpayTransactionCreatedResponse::getTransactionPaymentUrl)
+                .map(paymentUrl -> ResponseEntity.ok(Map.of(
+                    "status", true,
+                    "payment_url", paymentUrl
+                )))
+            );
     }
 }
