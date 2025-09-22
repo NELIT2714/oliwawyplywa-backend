@@ -51,6 +51,7 @@ public class TpayPaymentService {
                 Map<String, Object> requestBody = Map.of(
                     "amount", totalAmount.setScale(2, RoundingMode.HALF_UP).doubleValue(),
                     "description", "Transakcja na zamówienie #%d".formatted(order.getOrderId()),
+                    "hiddenDescription", order.getOrderId(),
                     "payer", Map.of(
                         "email", order.getEmail(),
                         "name", order.getFullName(),
@@ -60,10 +61,6 @@ public class TpayPaymentService {
                         "payerUrls", Map.of(
                             "success", "https://oliwawyplywa.pl/",
                             "error", "https://oliwawyplywa.pl/"
-                        ),
-                        "notification", Map.of(
-                            "url", "https://api.dba-agency.com/v1/tpay/callback",
-                            "email", order.getEmail()
                         )
                     ),
                     "currency", "PLN"
