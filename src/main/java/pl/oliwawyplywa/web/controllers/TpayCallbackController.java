@@ -29,7 +29,7 @@ public class TpayCallbackController {
                 dataBuffer.read(bodyBytes);
                 DataBufferUtils.release(dataBuffer);
 
-                System.out.println("[CALLBACK BODY (raw)] " + new String(bodyBytes, StandardCharsets.UTF_8));
+                System.out.println("[CALLBACK BODY (raw)] " + new String(bodyBytes, StandardCharsets.ISO_8859_1));
 
                 return Mono.fromCallable(() -> signatureService.verify(jws, bodyBytes))
                     .map(ok -> ok ? "TRUE" : "FALSE - invalid signature")
