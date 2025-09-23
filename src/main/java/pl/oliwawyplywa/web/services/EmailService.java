@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple2;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -94,10 +95,10 @@ public class EmailService {
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
-            helper.setFrom("Oliwa Wypływa");
+            helper.setFrom(adminMail, "Oliwa Wypływa");
             // helper.setReplyTo("kontakt@oliwa-sklep.pl");
             mailSender.send(message);
-        } catch (MessagingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             throw new RuntimeException("Failed to send email", e);
         }
     }
