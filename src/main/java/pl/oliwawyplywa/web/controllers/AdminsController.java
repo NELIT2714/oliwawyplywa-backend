@@ -124,5 +124,4 @@ public class AdminsController {
         return adminsService.login(loginDTO)
             .map(token -> ResponseEntity.ok(Map.of("status", true, "token", token.getToken())));
     }
-
 }

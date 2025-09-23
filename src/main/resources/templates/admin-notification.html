@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Potwierdzenie zamówienia</title>
+  <title>Nowe zamówienie - Powiadomienie administratora</title>
   <style type="text/css">
       body {
           margin: 0;
@@ -21,7 +21,7 @@
       }
 
       .header {
-          background-color: #4CAF50;
+          background-color: #d9534f;
           color: white;
           text-align: center;
       }
@@ -41,25 +41,24 @@
         <!-- Header -->
         <tr>
           <td class="header" style="padding: 20px;">
-            <h1>Potwierdzenie zamówienia</h1>
-            <p>Sklep z Oliwą z Oliwek</p>
+            <h1>Nowe zamówienie</h1>
+            <p>Powiadomienie dla administratora</p>
           </td>
         </tr>
-        <!-- Greeting -->
+        <!-- Info -->
         <tr>
           <td style="padding: 20px;">
-            <p>Szanowny Kliencie,</p>
-            <p>Dziękujemy za Twój zakup w naszym sklepie!</p>
+            <p>Otrzymano nowe zamówienie w sklepie <strong>Oliwa z Oliwek</strong>.</p>
           </td>
         </tr>
         <!-- User Details -->
         <tr>
           <td style="padding: 20px;">
-            <h2>Szczegóły Twojego zamówienia</h2>
+            <h2>Dane klienta</h2>
             <table width="100%" border="1" cellspacing="0" cellpadding="5">
               <tr>
-                <td>Imię Nazwisko:</td>
-                <td th:text="${userFullName}">Jan</td>
+                <td>Imię i nazwisko:</td>
+                <td th:text="${userFullName}">Jan Kowalski</td>
               </tr>
               <tr>
                 <td>Adres:</td>
@@ -67,7 +66,11 @@
               </tr>
               <tr>
                 <td>Telefon:</td>
-                <td>+48 123 456 789</td>
+                <td th:text="${userPhone}">+48 123 456 789</td>
+              </tr>
+              <tr>
+                <td>Email:</td>
+                <td th:text="${userEmail}">jan.kowalski@example.com</td>
               </tr>
             </table>
           </td>
@@ -75,7 +78,7 @@
         <!-- Products Section -->
         <tr>
           <td style="padding: 20px;">
-            <h2>Wybrane produkty</h2>
+            <h2>Lista produktów</h2>
             <table width="100%" border="1" cellspacing="0" cellpadding="5">
               <thead>
               <tr>
@@ -105,17 +108,13 @@
         <!-- Closing -->
         <tr>
           <td style="padding: 20px;">
-            <p>Dziękujemy za zakup!</p>
-            <p>Z poważaniem,</p>
-            <p>Sklep z Oliwą z Oliwek</p>
+            <p>To jest automatyczne powiadomienie – nie odpowiadaj na tę wiadomość.</p>
           </td>
         </tr>
         <!-- Footer -->
         <tr>
           <td class="footer" style="padding: 10px;">
-            <p>Skontaktuj się z nami pod adresem: <a th:href="'mailto:kontakt@oliwa-sklep.pl'"
-                                                     href="mailto:kontakt@oliwa-sklep.pl">kontakt@oliwa-sklep.pl</a></p>
-            <p>&copy; 2025 Sklep z Oliwą z Oliwek. Wszystkie prawa zastrzeżone.</p>
+            <p>&copy; 2025 Sklep z Oliwą z Oliwek. Panel administracyjny.</p>
           </td>
         </tr>
       </table>

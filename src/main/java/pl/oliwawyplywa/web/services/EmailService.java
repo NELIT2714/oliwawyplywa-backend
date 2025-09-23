@@ -2,17 +2,16 @@ package pl.oliwawyplywa.web.services;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import pl.oliwawyplywa.web.repositories.OrderItemsRepository;
 import pl.oliwawyplywa.web.schemas.Order;
 import pl.oliwawyplywa.web.schemas.OrderItem;
 import reactor.core.publisher.Mono;
-
-import org.thymeleaf.context.Context;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple2;
 
@@ -21,6 +20,9 @@ import java.util.List;
 
 @Service
 public class EmailService {
+
+    @Value("${spring.mail.admin_mail}")
+    private String adminMail;
 
     private final OrderItemsRepository orderItemsRepository;
     private final JavaMailSender mailSender;
@@ -35,7 +37,8 @@ public class EmailService {
     }
 
     public Mono<Void> sendOrderEmails(Order order) {
-        Mono<List<OrderItem>> orderItemsMono = orderItemsRepository.getOrderItemsWithOptionsByOrderId(order.getOrderId())
+        Mono<List<OrderItem>> orderItemsMono = orderItemsRepository
+            .getOrderItemsWithOptionsByOrderId(order.getOrderId())
             .collectList()
             .switchIfEmpty(Mono.just(List.of()));
 
@@ -46,12 +49,24 @@ public class EmailService {
                 Context userContext = getContext(order, tuple);
                 String userHtml = templateEngine.process("user-confirmation", userContext);
 
-                return Mono.fromRunnable(() -> sendEmail(
-                    order.getEmail(),
-                    "Dziękujemy za zamówienie!",
-                    userHtml
-                )).subscribeOn(Schedulers.boundedElastic()).then();
+                Context adminContext = getContext(order, tuple);
+                String adminHtml = templateEngine.process("admin-notification", adminContext);
+
+                return Mono.when(
+                    Mono.fromRunnable(() -> sendEmail(
+                        order.getEmail(),
+                        "Dziękujemy za zamówienie!",
+                        userHtml
+                    )).subscribeOn(Schedulers.boundedElastic()),
+
+                    Mono.fromRunnable(() -> sendEmail(
+                        adminMail,
+                        "Nowe zamówienie #" + order.getOrderId(),
+                        adminHtml
+                    )).subscribeOn(Schedulers.boundedElastic())
+                );
             })
+            .then()
             .onErrorResume(e -> {
                 System.err.println("Failed to send order emails: " + e.getMessage());
                 return Mono.error(new RuntimeException("Failed to send order emails", e));
@@ -79,6 +94,8 @@ public class EmailService {
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
+            helper.setFrom("Oliwa Wypływa");
+            // helper.setReplyTo("kontakt@oliwa-sklep.pl");
             mailSender.send(message);
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email", e);
