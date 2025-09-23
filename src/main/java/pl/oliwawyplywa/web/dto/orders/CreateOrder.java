@@ -11,6 +11,9 @@ public class CreateOrder {
 
     private String email;
     private String address;
+
+    @JsonProperty("phone_number")
+    private String phoneNumber;
     private List<OrderItemDTO> products;
 
     public String getEmail() {
@@ -27,5 +30,9 @@ public class CreateOrder {
 
     public String getFullName() {
         return fullName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 }

@@ -25,6 +25,10 @@ public class Order {
     @Column("address")
     private String address;
 
+    @Column("phone_number")
+    @JsonProperty("phone_number")
+    private String phoneNumber;
+
     @Column("status")
     private OrderStatuses status;
 
@@ -32,10 +36,11 @@ public class Order {
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
-    public Order(String email, String fullName, String address, OrderStatuses status) {
+    public Order(String email, String fullName, String address, String phoneNumber, OrderStatuses status) {
         this.email = email;
         this.fullName = fullName;
         this.address = address;
+        this.phoneNumber = phoneNumber;
         this.status = status;
     }
 
@@ -85,5 +90,13 @@ public class Order {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

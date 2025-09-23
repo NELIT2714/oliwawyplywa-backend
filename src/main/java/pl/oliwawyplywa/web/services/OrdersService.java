@@ -64,6 +64,7 @@ public class OrdersService {
             createOrderDTO.getEmail(),
             createOrderDTO.getFullName(),
             createOrderDTO.getAddress(),
+            createOrderDTO.getPhoneNumber(),
             OrderStatuses.CREATED
         );
     }

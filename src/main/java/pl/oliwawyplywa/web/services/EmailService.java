@@ -22,8 +22,11 @@ import java.util.List;
 @Service
 public class EmailService {
 
-    @Value("${spring.mail.admin_mail}")
+    @Value("${spring.mail.admin_notify_mail}")
     private String adminMail;
+
+    @Value("${spring.mail.admin_personal}")
+    private String adminPersonal;
 
     private final OrderItemsRepository orderItemsRepository;
     private final JavaMailSender mailSender;
@@ -81,7 +84,8 @@ public class EmailService {
         Context userContext = new Context();
         userContext.setVariable("userFullName", order.getFullName());
         userContext.setVariable("userAddress", order.getAddress());
-        //        userContext.setVariable("userPhone", user.getPhone());
+        userContext.setVariable("userEmail", order.getEmail());
+        userContext.setVariable("userPhone", order.getPhoneNumber());
         userContext.setVariable("products", orderItems);
         userContext.setVariable("total", calculatedTotal);
 
@@ -95,7 +99,7 @@ public class EmailService {
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
-            helper.setFrom(adminMail, "Oliwa Wypływa");
+            helper.setFrom(adminMail, adminPersonal);
             // helper.setReplyTo("kontakt@oliwa-sklep.pl");
             mailSender.send(message);
         } catch (MessagingException | UnsupportedEncodingException e) {

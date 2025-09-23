@@ -19,7 +19,8 @@ spring:
     port: ${MAILER_PORT}
     username: ${MAILER_USERNAME}
     password: ${MAILER_PASSWORD}
-    admin_mail: "olshanskyioleh25@gmail.com"
+    admin_notify_mail: ${MAILER_ADMIN_NOTIFY_MAIL}
+    admin_personal: ${MAILER_ADMIN_PERSONAL}
     properties:
       mail:
         smtp:
