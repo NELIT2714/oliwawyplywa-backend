@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS tbl_orders
     full_name  VARCHAR(150)                                 NOT NULL,
     email      VARCHAR(150)                                 NOT NULL,
     address    VARCHAR(255)                                 NOT NULL,
+    phone_number VARCHAR(20)                                NOT NULL,
     status     ENUM ("CREATED", "PAID") NOT NULL DEFAULT 'CREATED',
     created_at TIMESTAMP                                    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_orders_email (email),
